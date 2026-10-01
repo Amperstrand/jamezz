@@ -16,4 +16,6 @@ jobs:
       - run: npm ci
       - name: Leak gate
         run: node scripts/leak-scan.mjs . --history
+      - run: npm run typecheck
+      - run: npm run build
       - run: npm test
