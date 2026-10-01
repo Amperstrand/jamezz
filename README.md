@@ -16,6 +16,7 @@ const menu = await client.menu(burgermeisterTable());
 ```
 
 Start here if you want to place an order: [docs/ORDERING.md](docs/ORDERING.md).
-Locations: [docs/VENUES.md](docs/VENUES.md).
+How the method was found, and the prompts to repeat it: [docs/HOW.md](docs/HOW.md).
+Locations: [docs/VENUES.md](docs/VENUES.md). Prompts: [prompts/](prompts/).
 
 Requires Node.js 22. `npm test` runs against synthetic payloads only.

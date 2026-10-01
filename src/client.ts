@@ -2,14 +2,9 @@ import { fetchJson, JAMEZZ_ORIGIN, sessionHeaders } from "./http.js";
 import { menuFromPayload, type RawMenuPayload, type RawSalesarea } from "./menu.js";
 import { draftFromLines, ORDER_ENDPOINT, prepareOrder } from "./order.js";
 import { tableMid, type CartLine, type Fulfillment, type Menu, type PaymentHandoff, type PreparedOrder, type TableMid, type Venue } from "./types.js";
+import { knownTable, KNOWN_TABLES } from "./venues.js";
 
-export const KNOWN_TABLES = {
-  "8613S3X": {
-    name: "Burgermeister Mehringdamm (Tafel 1)",
-    address: "Mehringdamm 39, 10961 Berlin",
-    note: "Only mapped table QR as of 2026-09-30. Other locations need their own QR photo.",
-  },
-} as const;
+export { KNOWN_TABLES };
 
 export interface ClientOptions {
   readonly fetchImpl?: typeof fetch;
@@ -48,7 +43,7 @@ export class JamezzClient {
     if (!result.ok) return null;
     const salesarea = result.value.data?.salesarea;
     if (salesarea?.systeemNaam === undefined) return null;
-    const known = KNOWN_TABLES[table as keyof typeof KNOWN_TABLES];
+    const known = knownTable(table);
     return {
       id: table,
       name: salesarea.systeemNaam.trim(),
