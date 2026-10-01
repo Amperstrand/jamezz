@@ -1,3 +1,5 @@
+import { isTransportFailure } from "./error.js";
+
 export const JAMEZZ_ORIGIN = "https://qrv5.jamezz.app";
 export const USER_AGENT = "jamezz/0.1";
 
@@ -9,6 +11,8 @@ export interface JsonResult<T> {
 
 export interface JsonFailure {
   readonly ok: false;
+  /** "network" = transport failure (thrown, timeout, DNS); "http" = the server answered with an error status. */
+  readonly kind: "http" | "network";
   readonly status: number;
   readonly body: string;
 }
@@ -36,10 +40,21 @@ export async function fetchJson<T>(
   init: RequestInit,
   fetchImpl: typeof fetch = fetch,
 ): Promise<FetchJsonResult<T>> {
-  const response = await fetchImpl(url, init);
+  let response: Response;
+  try {
+    response = await fetchImpl(url, init);
+  } catch (error) {
+    if (!isTransportFailure(error)) throw error;
+    return {
+      ok: false,
+      kind: "network",
+      status: 0,
+      body: error instanceof Error ? error.message : String(error),
+    };
+  }
   const cookie = cookieHeader(response);
   if (!response.ok) {
-    return { ok: false, status: response.status, body: (await response.text()).slice(0, 500) };
+    return { ok: false, kind: "http", status: response.status, body: (await response.text()).slice(0, 500) };
   }
   return { ok: true, value: (await response.json()) as T, cookie };
 }

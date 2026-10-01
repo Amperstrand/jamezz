@@ -15,6 +15,26 @@ const client = new JamezzClient();
 const menu = await client.menu(burgermeisterTable());
 ```
 
+Install (published decision pending — git install is the supported path):
+
+```sh
+npm install github:Amperstrand/jamezz
+```
+
+Read-only CLI (no order command on purpose — the payment boundary stays
+with the caller):
+
+```sh
+npx jamezz tables
+npx jamezz venue 8613S3X
+npx jamezz menu 8613S3X
+```
+
+Error semantics: a thrown `JamezzError` (reason `"network"`) means the
+platform was unreachable; a `null` return always means the platform
+answered and the thing is absent. `submit()` no longer needs a cookie —
+the client owns its session and re-bootstraps on a delta-empty menu.
+
 Start here to place an order end to end with your own card:
 [docs/PARTICIPANT-GUIDE.md](docs/PARTICIPANT-GUIDE.md).
 Ordering details: [docs/ORDERING.md](docs/ORDERING.md).

@@ -1,3 +1,4 @@
+import { asTransportError, JamezzError } from "./error.js";
 import { fetchJson, JAMEZZ_ORIGIN, sessionHeaders } from "./http.js";
 import { menuFromPayload, type RawMenuPayload, type RawSalesarea } from "./menu.js";
 import { draftFromLines, ORDER_ENDPOINT, prepareOrder } from "./order.js";
@@ -32,7 +33,13 @@ function checkoutUrl(payload: OrderResponse): string | null {
   );
 }
 
+function network(context: string, failure: { readonly body: string }): JamezzError {
+  return new JamezzError("network", `${context}: ${failure.body}`);
+}
+
 export class JamezzClient {
+  private readonly sessions = new Map<string, string>();
+
   constructor(private readonly options: ClientOptions = {}) {}
 
   async venue(table: TableMid): Promise<Venue | null> {
@@ -40,7 +47,10 @@ export class JamezzClient {
       headers: sessionHeaders(table, null),
       signal: AbortSignal.timeout(20_000),
     }, this.options.fetchImpl);
-    if (!result.ok) return null;
+    if (!result.ok) {
+      if (result.kind === "network") throw network("venue fetch failed", result);
+      return null;
+    }
     const salesarea = result.value.data?.salesarea;
     if (salesarea?.systeemNaam === undefined) return null;
     const known = knownTable(table);
@@ -56,22 +66,15 @@ export class JamezzClient {
   }
 
   async menu(table: TableMid): Promise<Menu | null> {
-    const fetchImpl = this.options.fetchImpl ?? fetch;
-    const bootstrap = await fetchImpl(`${JAMEZZ_ORIGIN}/v5/qr/${table}`, {
-      headers: { "user-agent": "jamezz/0.1", accept: "text/html" },
-      signal: AbortSignal.timeout(20_000),
-    });
-    const cookie = bootstrap.headers.getSetCookie().map((entry) => entry.split(";")[0]).filter(Boolean).join("; ") || null;
-    const sales = await fetchJson<RawSalesarea>(this.salesareaUrl(table), {
-      headers: sessionHeaders(table, null),
-      signal: AbortSignal.timeout(20_000),
-    }, fetchImpl);
-    const data = await fetchJson<RawMenuPayload>(`${JAMEZZ_ORIGIN}/v5_2/qr/data-fetch-v2`, {
-      headers: sessionHeaders(table, cookie),
-      signal: AbortSignal.timeout(30_000),
-    }, fetchImpl);
-    if (!data.ok) return null;
-    return menuFromPayload(table, sales.ok ? sales.value : null, data.value, (this.options.now ?? (() => new Date()))());
+    const sales = await this.fetchSalesarea(table);
+    const hadSession = this.sessions.has(table);
+    let menu = await this.fetchMenu(table, await this.session(table), sales);
+    if (menu === null && hadSession) {
+      // data-fetch-v2 is a session delta: a cached session that already got
+      // its snapshot serves []. One fresh bootstrap + retry resolves it.
+      menu = await this.fetchMenu(table, await this.session(table, true), sales);
+    }
+    return menu;
   }
 
   async openCart(table: TableMid): Promise<string | null> {
@@ -84,8 +87,11 @@ export class JamezzClient {
       body,
       signal: AbortSignal.timeout(20_000),
     }, this.options.fetchImpl);
-    if (!result.ok || result.value.uuid === undefined) return null;
-    return result.value.uuid;
+    if (!result.ok) {
+      if (result.kind === "network") throw network("cart open failed", result);
+      return null;
+    }
+    return result.value.uuid ?? null;
   }
 
   prepare(input: {
@@ -100,20 +106,26 @@ export class JamezzClient {
   }
 
   /**
-   * Posts the prepared order. The response is a hosted card page.
+   * Posts the prepared order and returns the hosted card page handoff.
    * Do not enter a card number in this client. A person opens checkoutUrl.
+   * The session cookie is taken from the client's own bootstrap unless one
+   * is passed explicitly.
    */
-  async submit(prepared: PreparedOrder, cookie: string): Promise<PaymentHandoff | null> {
+  async submit(prepared: PreparedOrder, cookie?: string): Promise<PaymentHandoff | null> {
+    const owned = cookie ?? (await this.session(prepared.draft.table));
     const result = await fetchJson<OrderResponse>(ORDER_ENDPOINT, {
       method: "POST",
       headers: {
-        ...sessionHeaders(prepared.draft.table, cookie),
+        ...sessionHeaders(prepared.draft.table, owned ?? null),
         "content-type": "application/json",
       },
       body: JSON.stringify(prepared.body),
       signal: AbortSignal.timeout(30_000),
     }, this.options.fetchImpl);
-    if (!result.ok) return null;
+    if (!result.ok) {
+      if (result.kind === "network") throw network("order submit failed", result);
+      return null;
+    }
     const url = checkoutUrl(result.value);
     const orderId = result.value.data?.id ?? result.value.id;
     if (url === null || orderId === undefined) return null;
@@ -122,6 +134,57 @@ export class JamezzClient {
       checkoutUrl: url,
       note: "Open checkoutUrl and pay with your own card. This client stops here.",
     };
+  }
+
+  private async fetchSalesarea(table: TableMid): Promise<RawSalesarea | null> {
+    const result = await fetchJson<RawSalesarea>(this.salesareaUrl(table), {
+      headers: sessionHeaders(table, null),
+      signal: AbortSignal.timeout(20_000),
+    }, this.options.fetchImpl);
+    if (!result.ok) {
+      if (result.kind === "network") throw network("salesarea fetch failed", result);
+      return null;
+    }
+    return result.value;
+  }
+
+  private async fetchMenu(
+    table: TableMid,
+    cookie: string | null,
+    sales: RawSalesarea | null,
+  ): Promise<Menu | null> {
+    const data = await fetchJson<RawMenuPayload>(`${JAMEZZ_ORIGIN}/v5_2/qr/data-fetch-v2`, {
+      headers: sessionHeaders(table, cookie),
+      signal: AbortSignal.timeout(30_000),
+    }, this.options.fetchImpl);
+    if (!data.ok) {
+      if (data.kind === "network") throw network("menu fetch failed", data);
+      return null;
+    }
+    return menuFromPayload(table, sales, data.value, (this.options.now ?? (() => new Date()))());
+  }
+
+  private async session(table: TableMid, fresh = false): Promise<string | null> {
+    if (!fresh) {
+      const cached = this.sessions.get(table);
+      if (cached !== undefined) return cached;
+    }
+    let bootstrap: Response;
+    try {
+      bootstrap = await (this.options.fetchImpl ?? fetch)(`${JAMEZZ_ORIGIN}/v5/qr/${table}`, {
+        headers: { "user-agent": "jamezz/0.1", accept: "text/html" },
+        signal: AbortSignal.timeout(20_000),
+      });
+    } catch (error) {
+      throw asTransportError(error);
+    }
+    const cookie = bootstrap.headers
+      .getSetCookie()
+      .map((entry) => entry.split(";")[0])
+      .filter(Boolean)
+      .join("; ") || null;
+    if (cookie !== null) this.sessions.set(table, cookie);
+    return cookie;
   }
 
   private salesareaUrl(table: string): string {

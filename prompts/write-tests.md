@@ -52,7 +52,9 @@ the wire contract, and stay leak-gate clean.
 ## Lessons (append-only)
 
 - Jamezz serves `data-fetch-v2` as a session delta — the fake must key on
-  the bootstrap cookie or ordering bugs hide.
+  the bootstrap cookie or ordering bugs hide. Upgrade: the fake now issues
+  a numbered session per bootstrap and serves the snapshot exactly once,
+  which also proves the client's cached-session retry.
 - Link ids (`menukaart_products`) are numeric; entity ids are strings —
   stringify before joining.
 - Price-0 size parents resolve their display price from a priced
@@ -64,3 +66,7 @@ the wire contract, and stay leak-gate clean.
   never fake the math.
 - The first loyalty mail after signup can 200 and never deliver — when a
   loyalty client is added, encode the resend in the fake.
+- A non-2xx bootstrap must not set a session cookie, or the delta test
+  lies (found the hard way: the first fake handed cookies out on 503s).
+- Transport death and "platform says no" are different contracts: network
+  failures throw a typed error, absences return null. Test both.

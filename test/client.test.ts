@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { burgermeisterTable, JamezzClient } from "../src/client.js";
+import { burgermeisterTable, JamezzClient, JamezzError } from "../src/index.js";
 import { tableMid } from "../src/types.js";
 import { fakeJamezz, SYNTHETIC_SESSION_COOKIE } from "./jamezz-fake.js";
 import { sent } from "./transport-fake.js";
@@ -66,6 +66,28 @@ describe("menu", () => {
     const menu = await client(noSession.fetchImpl).menu(burgermeisterTable());
     expect(menu).toBeNull();
   });
+
+  it("re-bootstraps once when a cached session already got its snapshot", async () => {
+    const { fetchImpl, requests } = fakeJamezz();
+    const c = client(fetchImpl);
+    const first = await c.menu(burgermeisterTable());
+    expect(first?.categories[0]?.items[0]?.name).toBe("Cheeseburger");
+    const second = await c.menu(burgermeisterTable());
+    expect(second?.categories[0]?.items[0]?.name).toBe("Cheeseburger");
+    const bootstraps = requests.filter((r) => r.url.endsWith("/v5/qr/8613S3X"));
+    expect(bootstraps).toHaveLength(2);
+  });
+
+  it("throws a typed network error when the transport dies", async () => {
+    const dead: typeof fetch = (async () => {
+      throw new TypeError("fetch failed");
+    }) as typeof fetch;
+    await expect(client(dead).venue(burgermeisterTable())).rejects.toMatchObject({
+      name: "JamezzError",
+      reason: "network",
+    });
+    await expect(client(dead).menu(burgermeisterTable())).rejects.toBeInstanceOf(JamezzError);
+  });
 });
 
 describe("cart and order", () => {
@@ -120,6 +142,24 @@ describe("cart and order", () => {
     } else {
       expect.unreachable("order body must be a JSON string");
     }
+  });
+
+  it("bootstraps its own session for submit() when no cookie is given", async () => {
+    const { fetchImpl, requests } = fakeJamezz();
+    const c = client(fetchImpl);
+    const prepared = c.prepare({
+      table: burgermeisterTable(),
+      lines: [{ productId: "101", name: "Cheeseburger", unitPrice: 6.4, quantity: 1, optionProductIds: [] }],
+      fulfillment: "eat-in",
+      email: "guest@example.test",
+      cartUuid: "synthetic-cart-uuid",
+      currency: "EUR",
+    });
+    const handoff = await c.submit(prepared);
+    expect(handoff?.checkoutUrl).toBe("https://pay.example/mollie/session/synthetic");
+    const order = sent(requests, "/v5_2/kiosk/order");
+    expect(order?.headers["cookie"]).toContain("synthetic-session-1");
+    expect(requests.some((r) => r.url.endsWith("/v5/qr/8613S3X"))).toBe(true);
   });
 
   it("returns null when the venue never yields a checkout url", async () => {

@@ -93,6 +93,8 @@ export function fakeJamezz(options: FakeJamezzOptions = {}): {
   readonly requests: readonly RecordedRequest[];
 } {
   const requests: RecordedRequest[] = [];
+  let issued = 0;
+  const served = new Set<string>();
   const fetchImpl: typeof fetch = async (input, init) => {
     const url = String(input);
     const method = (init?.method ?? "GET").toUpperCase();
@@ -100,10 +102,11 @@ export function fakeJamezz(options: FakeJamezzOptions = {}): {
 
     if (method === "GET" && url === `${ORIGIN}/v5/qr/8613S3X`) {
       const status = options.bootstrapStatus ?? 200;
+      issued += 1;
       return new Response("<html>synthetic qr page</html>", {
         status,
         ...(status < 400
-          ? { headers: { "set-cookie": `${SYNTHETIC_SESSION_COOKIE}; Path=/; HttpOnly` } }
+          ? { headers: { "set-cookie": `${SYNTHETIC_SESSION_COOKIE}-${issued}; Path=/; HttpOnly` } }
           : {}),
       });
     }
@@ -112,8 +115,10 @@ export function fakeJamezz(options: FakeJamezzOptions = {}): {
     }
     if (url === `${ORIGIN}/v5_2/qr/data-fetch-v2`) {
       const cookie = headerRecord(init).cookie ?? "";
-      const fresh = cookie.includes("synthetic-session");
-      return jsonResponse(fresh ? menuPayload : { status: "ok", data: [] });
+      const isFreshSnapshot =
+        cookie === `${SYNTHETIC_SESSION_COOKIE}-${issued}` && !served.has(cookie);
+      if (isFreshSnapshot) served.add(cookie);
+      return jsonResponse(isFreshSnapshot ? menuPayload : { status: "ok", data: [] });
     }
     if (method === "POST" && url === `${ORIGIN}/v5_2/shopping-cart`) {
       return jsonResponse({ status: "ok", uuid: "synthetic-cart-uuid" });
