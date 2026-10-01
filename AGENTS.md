@@ -15,7 +15,8 @@ Logs and HAR files are how a card number leaks. They are gitignored.
 
 ## Before a public push
 
-1. `sh scripts/install-hooks.sh` once per clone.
+1. `sh scripts/install-hooks.sh` once per clone. (`npm install` builds `dist/`
+   via `prepare` — it does not install hooks; that stays a manual step.)
 2. Commit with `sh scripts/git-commit.sh`, not bare `git commit`. This
    environment does not launch git hooks, so the wrapper is the local gate.
 3. `node scripts/leak-scan.mjs . --history` — must print 0 findings.
