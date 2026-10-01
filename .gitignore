@@ -4,10 +4,17 @@ dist/
 coverage/
 .env
 .env.*
+.dev.vars
 *.har
 *.pcap
+*.log
+*.pem
+*.p12
 fixtures/
 captures/
 snapshots/
+films/
+research/
 session.json
 identity.json
+cookies.txt

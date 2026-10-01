@@ -19,7 +19,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
+    "gate": "node scripts/leak-scan.mjs . --history",
+    "prepare": "sh scripts/install-hooks.sh"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",

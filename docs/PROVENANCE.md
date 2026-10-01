@@ -1,9 +1,7 @@
 # Provenance
 
-Extracted 2026-10-01 from the private mcp-oda working tree
-(`5a232ccac055500ce06ffdf975b5fc809be7bf94`), path
-`packages/commerce-core/src/providers/jamezz.ts`, plus the Jamezz playbook
-and the 2026-09-30 Burgermeister research notes.
+Extracted 2026-10-01 from a private working tree. The source repo name
+and commit hash are intentionally not recorded here.
 
 Published:
 
