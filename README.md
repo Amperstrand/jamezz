@@ -15,8 +15,13 @@ const client = new JamezzClient();
 const menu = await client.menu(burgermeisterTable());
 ```
 
-Start here if you want to place an order: [docs/ORDERING.md](docs/ORDERING.md).
+Start here to place an order end to end with your own card:
+[docs/PARTICIPANT-GUIDE.md](docs/PARTICIPANT-GUIDE.md).
+Ordering details: [docs/ORDERING.md](docs/ORDERING.md).
+More venues in Berlin and Germany: [docs/CANDIDATES.md](docs/CANDIDATES.md).
 How the method was found, and the prompts to repeat it: [docs/HOW.md](docs/HOW.md).
-Locations: [docs/VENUES.md](docs/VENUES.md). Prompts: [prompts/](prompts/).
+Locations: [docs/VENUES.md](docs/VENUES.md).
+Prompts (onboarding a table, a new platform, mapping a brand, cheapest test
+order, writing the tests): [prompts/](prompts/).
 
 Requires Node.js 22. `npm test` runs against synthetic payloads only.
