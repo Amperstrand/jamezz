@@ -109,9 +109,11 @@ Verified guest checkout on 2026-09-30, Mehringdamm:
 6. `GET /v5_2/kiosk/order/{id}` reports `payStatus` and `apiStatus`.
    While unpaid both stay `0`, and the kitchen is not fired.
 
-`client.prepare(...)` builds that JSON. `client.submit(...)` posts it and
-returns the checkout URL. If the URL is missing, stop and read the response.
-Do not guess a Mollie session id.
+`client.prepare(...)` builds that JSON. `client.submit(prepared)` posts it
+and returns the checkout URL — the client owns its session cookie, so no
+cookie handling is needed (one can still be passed explicitly). If the URL
+is missing, stop and read the response. A `JamezzError` (reason `"network"`)
+means the platform was unreachable; a null return means it answered.
 
 Terms shown by the venue: `https://www.jamezz.nl/pdf/av.pdf` and
 `https://www.jamezz.nl/pdf/pv.pdf`.

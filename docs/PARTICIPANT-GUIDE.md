@@ -15,9 +15,17 @@ git. Receiving is free; you never need to send mail.
 
 ## 2. Read a real menu (free, no order)
 
+Library:
+
 ```ts
 import { burgermeisterTable, JamezzClient } from "jamezz";
 const menu = await new JamezzClient().menu(burgermeisterTable());
+```
+
+Or the read-only CLI:
+
+```sh
+npx jamezz menu 8613S3X
 ```
 
 Table `8613S3X` is Burgermeister Mehringdamm (Berlin). Verified read path,
