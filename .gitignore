@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+.env
+.env.*
+*.har
+*.pcap
+fixtures/
+captures/
+snapshots/
+session.json
+identity.json
