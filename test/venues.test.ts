@@ -18,11 +18,31 @@ describe("venue catalog", () => {
       "84608JJ",
       "487MVV",
       "489URT",
+      "5664DQG",
+      "4239RHK",
+      "7774HRA",
+      "326HS2",
+      "7378ZVM",
+      "1881RKN",
+      "87674F",
+      "476WWU",
+      "81497N3",
+      "2029G5T",
+      "8570ZSY",
+      "8402YDM",
+      "6395VGP",
+      "5750FMD",
+      "56699YH",
+      "7229MSB",
+      "5779SPH",
+      "6983CS7",
     ]);
     expect(knownTable("8613S3X")?.address).toContain("Mehringdamm");
     expect(knownTable("8329DHW")?.name).toContain("Limoncello");
     expect(knownTable("7991NQZ")?.address).toContain("Scherpenheuvel");
     expect(knownTable("84608JJ")?.note).toContain("SEK");
+    expect(knownTable("56699YH")?.note).toContain("OMNIKASSA");
+    expect(knownTable("4239RHK")?.note).toContain("PAYNL");
     expect(knownTable("NOPE")).toBeUndefined();
   });
 
