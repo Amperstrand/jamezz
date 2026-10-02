@@ -1,6 +1,11 @@
 # jamezz
 
 Client and field notes for [Jamezz](https://qrv5.jamezz.app) table ordering.
+
+This module is part of **DropShop** (working title) — one 402-gated order
+API for anything, live at <https://api.cashu.exchange> (demo tier). See
+[Amperstrand/mcp-oda](https://github.com/Amperstrand/mcp-oda) for the unified
+gateway; this package is the Jamezz venue adapter it consumes.
 Burgermeister Mehringdamm table 1 (`8613S3X`) is the worked example, verified
 2026-09-30.
 
