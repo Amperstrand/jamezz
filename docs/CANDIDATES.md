@@ -16,11 +16,20 @@ been seen); the order flow is the same.
    `"jamezz.app/dl" <city>`. This method is proven: three of the four
    cataloged tables were found this way (see docs/VENUES.md) — Van der
    Valk hotels publish their QR pages and Google indexes them.
-3. **Brand sites and socials.** Venues link their QR URL from their own
+3. **Crawl chain websites.** A chain's own site often embeds every
+   location's webshop link in static HTML or JSON. Proven 2026-10-02
+   (48 of 50 new mids in one sister-project harvest): `annemax.nl/vestigingen/`
+   carried 36 Anne&Max mids on a single page, `omami.se` listed all five
+   Ômami webshops. Detector: fetch the page, grep for
+   `qrv5.jamezz.app/v5/qr/` and `jamezz.app/dl/` (URL-decode JSON `\/`).
+   WordPress/WooCommerce chain sites often hide the links in a locations
+   JSON (`services[].url`) — check `wp-json` endpoints too.
+4. **Brand sites and socials.** Venues link their QR URL from their own
    website, Instagram bio, or even their LinkedIn homepage.
-4. **Named Jamezz chains** (from Jamezz's own marketing, mostly NL for now):
+5. **Named Jamezz chains** (from Jamezz's own marketing, mostly NL for now):
    De Beren, La Place, van der Valk hotels. German hotel and stadium
-   restaurants are the likeliest Berlin-area candidates.
+   restaurants are the likeliest Berlin-area candidates. (La Place Efteling
+   is cataloged as `56699YH`.)
 
 A mid looks like `{digits}{3 chars}`. The digit prefix is USUALLY the
 salesarea id and sometimes is not (van der Valk `4577SVC` → salesarea 5570).
@@ -38,6 +47,22 @@ These are plausible, not confirmed — verify before adding:
 - Burger chains with table service: Jim Block, Burgeramt, Berlin Burger
   International — check for QR table tents.
 - Anything whose QR resolves to `qrv5.jamezz.app` — then it is done.
+
+## Known-resolving mids pending seasonal activation
+
+Found and live-resolved during the 2026-10-02 sister-project harvest on
+ai-legion (`mcp-oda` `research/jamezz-harvest-2026-10-01.md`), but the
+menu surface comes back empty — holiday-park snackbars winding down for
+winter. The mids resolve and redirect; `venue`/`menu` return null
+(platform answered, thing absent). Recheck quarterly
+(`prompts/recheck-seasonal.md`); a row in `src/venues.ts` requires the
+usual live read (name, currency, real price).
+
+| mid | Venue | Found on (2026-10-01) | Status at 2026-10-03 |
+|---|---|---|---|
+| `8379GNH` | Poké Polé BV (Lokeren, BE) | exa — the venue's own website field is the qrv5 link | resolves; menu empty |
+| `7246AMU` | EuroParcs De Biesbosch — Snackbar | europarcsdebiesbosch.nl/faciliteiten/snackbar (static link then; JS-gated now) | resolves; menu empty |
+| `7111EUZ` | Vakantiepark De Beemster — Snackbar | vakantieparkdebeemster.nl/faciliteiten/snackbar (via europarcsbeekbergen.nl redirect) | resolves; menu empty |
 
 ## Other table-QR platforms (same method, different endpoints)
 
