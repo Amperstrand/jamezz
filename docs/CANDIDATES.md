@@ -47,6 +47,8 @@ The private corpus fingerprinted these; each needs its own fake + tests
 | Platform | Hallmark |
 |---|---|
 | jamezz | `qrv5.jamezz.app`, Laravel session + `session-mid` header, Mollie/Adyen/CM |
+| gastronovi | `services.gastronovi.com`, self-ordering widget behind a one-time ALTCHA proof-of-work; menu JSON cookieless after the PoW; Stripe/Adyen/PayPal + GN card; dead units still serve challenges — challenge ≠ liveness |
+| ordermonkey | `app.ordermonkey.com` (Selise, Angular), plain 4-header curl menu API, no PoW/login; keys baked into public bundle; CHF, SIX/Adyen/TWINT; org+branch UUID pair in the URL |
 | favrit | favrit.app ordering, Norwegian-origin, now wider |
 | tebi | tebi ordering pages |
 | ninito | Firestore websockets (no plain JSON) |
