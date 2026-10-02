@@ -8,11 +8,31 @@
 | `8329DHW` | Van der Valk Gent — Limoncello Take Away | Akkerhage 10, 9000 Gent, BE | ADYEN |
 | `5960PM3` | Van der Valk Gent — Roomservice Cocotte | Akkerhage 10, 9000 Gent, BE | ADYEN (room charge) |
 | `4577SVC` | van der Valk Gilze-Tilburg — Toekan To Go | Gilze-Tilburg, NL | ADYEN |
+| `6442UFX` | Summio Parc Heihaas — Webshop Snackbar | Voorthuizerstraat 75, 3881 SE Putten, NL | MOLLIE |
+| `7540MAK` | Jumbo Koornneef Monster — Webshop | Monster, Zuid-Holland, NL | MOLLIE |
+| `8114MKM` | Søgaard Bryghus takeaway | C.W. Obels Plads 1, 9000 Aalborg, DK | MOLLIE (DKK) |
+| `6399J53` | Jumbo Foodmarkt Koornneef Westland (Naaldwijk) — Webshop | Naaldwijk, Zuid-Holland, NL | MOLLIE |
+| `8325JY4` | Dickenz — Webshop (QR Design) | Scharendijke, Zeeland, NL | MOLLIE |
+| `7541HE2` | Jumbo Koornneef Aan de Haven (Scheveningen) — Webshop | Scheveningen, Den Haag, NL | MOLLIE |
+| `7991NQZ` | PAPAVESS — Webshop | Mannenberg 228, 3270 Scherpenheuvel, BE | MOLLIE |
+| `84608JJ` | Omami Ulricehamn — Webshop (Leading) | Ulricehamn, SE | MOLLIE (SEK) |
+| `487MVV` | Anne&Max Utrecht Domkwartier — Afhalen V5 | Utrecht Domkwartier, NL | MOLLIE |
+| `489URT` | Anne&Max Leidschendam — Webshop afhalen | Liguster 62, 2262 Leidschendam, NL | MOLLIE |
 
-`8613S3X` was photographed; the other three mids are venue-published
-(Google-indexed QR pages), each verified by a live read on 2026-10-02
-(name, currency, real prices). `540BEQ` ("hello alpha", CHF, Stripe) is the
-platform's own demo surface — documented here, deliberately not cataloged.
+`8613S3X` was photographed; the other thirteen mids are venue-published
+(Google-indexed QR pages under `qrv5.jamezz.app/v5/qr/…` and
+`jamezz.app/dl/…` redirects), each verified by a live read — venue name,
+currency, and at least one real price — on 2026-10-02. The 2026-10-02
+batch (jamezz#6) added ten venues across NL / BE / DK / SE and the first
+DKK and SEK rows: Summio Parc Heihaas snackbar (Pizza Margherita
+12.50 EUR), three Jumbo Koornneef webshops (Goat cheese salad 5.75 EUR /
+Breakfast deal 3.99 EUR), Søgaard Bryghus Aalborg (Bun with butter
+17.00 DKK), Dickenz Scharendijke (frappuccino 5.95 EUR), PAPAVESS
+Scherpenheuvel (Poke Bowl Medium 12.50 EUR, matches the venue's own
+menu PDF), Omami Ulricehamn (Sushi Pop California Roll 169.00 SEK), and
+two Anne&Max branches (Pastrami Sandwich 12.50 EUR). `540BEQ`
+("hello alpha", CHF, Stripe) is the platform's own demo surface —
+documented here, deliberately not cataloged.
 
 ## Burgermeister locations
 

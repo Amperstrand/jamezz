@@ -8,9 +8,21 @@ describe("venue catalog", () => {
       "8329DHW",
       "5960PM3",
       "4577SVC",
+      "6442UFX",
+      "7540MAK",
+      "8114MKM",
+      "6399J53",
+      "8325JY4",
+      "7541HE2",
+      "7991NQZ",
+      "84608JJ",
+      "487MVV",
+      "489URT",
     ]);
     expect(knownTable("8613S3X")?.address).toContain("Mehringdamm");
     expect(knownTable("8329DHW")?.name).toContain("Limoncello");
+    expect(knownTable("7991NQZ")?.address).toContain("Scherpenheuvel");
+    expect(knownTable("84608JJ")?.note).toContain("SEK");
     expect(knownTable("NOPE")).toBeUndefined();
   });
 

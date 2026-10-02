@@ -44,6 +44,66 @@ export const KNOWN_TABLES = [
     address: "Gilze-Tilburg, Netherlands",
     note: "Venue-published QR page (verified 2026-10-02: Burrata 13.25 EUR). ADYEN checkout.",
   },
+  {
+    mid: "6442UFX" as TableMid,
+    name: "Summio Parc Heihaas — Webshop Snackbar",
+    address: "Voorthuizerstraat 75, 3881 SE Putten, Netherlands",
+    note: "Google-indexed QR page (verified 2026-10-02: Pizza Margherita 12.50 EUR). MOLLIE checkout.",
+  },
+  {
+    mid: "7540MAK" as TableMid,
+    name: "Jumbo Koornneef Monster — Webshop",
+    address: "Monster, Zuid-Holland, Netherlands",
+    note: "Google-indexed QR page (verified 2026-10-02: Goat cheese salad 5.75 EUR). MOLLIE checkout.",
+  },
+  {
+    mid: "8114MKM" as TableMid,
+    name: "Søgaard Bryghus takeaway",
+    address: "C.W. Obels Plads 1, 9000 Aalborg, Denmark",
+    note: "Google-indexed QR page (verified 2026-10-02: Bun with butter 2GO 17.00 DKK). MOLLIE checkout. First DKK venue.",
+  },
+  {
+    mid: "6399J53" as TableMid,
+    name: "Jumbo Foodmarkt Koornneef Westland (Naaldwijk) — Webshop",
+    address: "Naaldwijk, Zuid-Holland, Netherlands",
+    note: "Google-indexed QR page (verified 2026-10-02: Breakfast deal 3.99 EUR). MOLLIE checkout.",
+  },
+  {
+    mid: "8325JY4" as TableMid,
+    name: "Dickenz — Webshop (QR Design)",
+    address: "Scharendijke, Zeeland, Netherlands",
+    note: "Google-indexed QR page (verified 2026-10-02: frappuccino 5.95 EUR). MOLLIE checkout.",
+  },
+  {
+    mid: "7541HE2" as TableMid,
+    name: "Jumbo Koornneef Aan de Haven (Scheveningen) — Webshop",
+    address: "Scheveningen, Den Haag, Netherlands",
+    note: "Google-indexed QR page (verified 2026-10-02: Breakfast deal 3.99 EUR). MOLLIE checkout.",
+  },
+  {
+    mid: "7991NQZ" as TableMid,
+    name: "PAPAVESS — Webshop",
+    address: "Mannenberg 228, 3270 Scherpenheuvel, Belgium",
+    note: "Google-indexed QR page (verified 2026-10-02: Poke Bowl Medium 12.50 EUR, matches the venue's own menu PDF). MOLLIE checkout.",
+  },
+  {
+    mid: "84608JJ" as TableMid,
+    name: "Omami Ulricehamn — Webshop (Leading)",
+    address: "Ulricehamn, Sweden",
+    note: "Google-indexed QR page (verified 2026-10-02: Sushi Pop California Roll 169.00 SEK). MOLLIE checkout. First SEK venue.",
+  },
+  {
+    mid: "487MVV" as TableMid,
+    name: "Anne&Max Utrecht Domkwartier — Afhalen V5",
+    address: "Utrecht Domkwartier, Netherlands",
+    note: "Google-indexed QR page (verified 2026-10-02: Pastrami Sandwich 12.50 EUR). MOLLIE checkout.",
+  },
+  {
+    mid: "489URT" as TableMid,
+    name: "Anne&Max Leidschendam — Webshop afhalen",
+    address: "Liguster 62, 2262 Leidschendam, Netherlands",
+    note: "Google-indexed jamezz.app/dl redirect page (verified 2026-10-02: Pastrami Sandwich 12.50 EUR). MOLLIE checkout.",
+  },
 ] as const satisfies readonly KnownTable[];
 
 /** Public street addresses. QR mids are unknown until someone photographs the table. */
