@@ -91,7 +91,7 @@ describe("menu", () => {
 });
 
 describe("cart and order", () => {
-  it("opens a cart with the table multipart fields", async () => {
+  it("opens a cart with the table multipart fields (v2 nested uuid, legacy fallback)", async () => {
     const { fetchImpl, requests } = fakeJamezz();
     const uuid = await client(fetchImpl).openCart(burgermeisterTable());
     expect(uuid).toBe("synthetic-cart-uuid");
@@ -106,6 +106,8 @@ describe("cart and order", () => {
     } else {
       expect.unreachable("cart body must be multipart form data");
     }
+    const legacy = fakeJamezz({ cartResponse: { status: "ok", uuid: "legacy-cart-uuid" } });
+    expect(await client(legacy.fetchImpl).openCart(burgermeisterTable())).toBe("legacy-cart-uuid");
   });
 
   it("posts the prepared order and stops at the hosted checkout", async () => {
@@ -132,13 +134,20 @@ describe("cart and order", () => {
     expect(post?.headers["cookie"]).toContain("synthetic-session");
     expect(post?.headers["content-type"]).toContain("application/json");
     if (typeof post?.body === "string") {
-      const body = JSON.parse(post.body) as Record<string, unknown>;
-      expect(body["payMethod"]).toBe("creditcard");
-      expect(body["session_mid"]).toBe("8613S3X");
+      const body = JSON.parse(post.body) as {
+        items: Array<{ uuid: string }>;
+        shoppingCart: { orderArticles: Array<{ uuid: string }> };
+        payMethod: string;
+        session_mid: string;
+        orderCustomFields: { OrderMode: { value: number }; email: { value: string } };
+      };
+      expect(body.payMethod).toBe("creditcard");
+      expect(body.session_mid).toBe("8613S3X");
       expect(JSON.stringify(body)).not.toMatch(/pan|cvc|cardnumber/i);
-      const fields = body["orderCustomFields"] as { OrderMode: { value: number }; email: { value: string } };
-      expect(fields.OrderMode.value).toBe(1);
-      expect(fields.email.value).toBe("guest@example.test");
+      expect(body.items[0]?.uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(body.shoppingCart.orderArticles[0]?.uuid).toBe(body.items[0]?.uuid);
+      expect(body.orderCustomFields.OrderMode.value).toBe(1);
+      expect(body.orderCustomFields.email.value).toBe("guest@example.test");
     } else {
       expect.unreachable("order body must be a JSON string");
     }
@@ -163,12 +172,31 @@ describe("cart and order", () => {
   });
 
   it("returns null when the venue never yields a checkout url", async () => {
-    const { fetchImpl } = fakeJamezz({ orderResponse: { status: "ok", data: { id: 424242 } } });
+    const { fetchImpl } = fakeJamezz({ orderResponse: { status: "ok", data: { orderId: 424242 } } });
     const c = client(fetchImpl);
     const prepared = c.prepare({
       table: burgermeisterTable(),
       lines: [{ productId: "103", name: "Viva Con Agua 0,33l", unitPrice: 3.1, quantity: 1, optionProductIds: [] }],
       fulfillment: "take-away",
+      email: "guest@example.test",
+      cartUuid: "synthetic-cart-uuid",
+      currency: "EUR",
+    });
+    expect(await c.submit(prepared, SYNTHETIC_SESSION_COOKIE)).toBeNull();
+  });
+
+  it("returns null on the v2 swallowed-error 200 (orderStatus 0, no orderId)", async () => {
+    const swallowed = fakeJamezz({
+      orderResponse: {
+        status: "ok",
+        data: { message: 'Undefined array key "uuid"', orderStatus: 0, requestPayment: 0, orderId: null },
+      },
+    });
+    const c = client(swallowed.fetchImpl);
+    const prepared = c.prepare({
+      table: burgermeisterTable(),
+      lines: [{ productId: "101", name: "Cheeseburger", unitPrice: 6.4, quantity: 1, optionProductIds: [] }],
+      fulfillment: "eat-in",
       email: "guest@example.test",
       cartUuid: "synthetic-cart-uuid",
       currency: "EUR",

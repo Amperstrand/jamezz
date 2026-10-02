@@ -70,3 +70,10 @@ the wire contract, and stay leak-gate clean.
   lies (found the hard way: the first fake handed cookies out on 503s).
 - Transport death and "platform says no" are different contracts: network
   failures throw a typed error, absences return null. Test both.
+- Platforms drift under you (jamezz-v2.0, 2026-10-02): the cart uuid moved
+  into `data.uuid`, order items need a client-generated per-line `uuid`
+  (missing uuid = HTTP 200 with a swallowed Laravel error and `orderStatus:
+  0`), and the checkout URL moved to
+  `data.paymentData.transaction.paymentURL`. Encode the new shape in the
+  fake, keep one fallback test for the legacy shape, and make the
+  swallowed-error 200 a test — a 200 is not a success.

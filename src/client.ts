@@ -14,17 +14,32 @@ export interface ClientOptions {
 
 interface OrderResponse {
   readonly data?: {
+    readonly orderStatus?: number;
+    readonly orderId?: number | string;
     readonly id?: number | string;
     readonly paymentUrl?: string;
     readonly checkoutUrl?: string;
     readonly redirectUrl?: string;
+    readonly paymentData?: {
+      readonly transaction?: {
+        readonly paymentURL?: string;
+      };
+    };
   };
   readonly id?: number | string;
   readonly paymentUrl?: string;
 }
 
+interface CartResponse {
+  readonly uuid?: string;
+  readonly data?: {
+    readonly uuid?: string;
+  };
+}
+
 function checkoutUrl(payload: OrderResponse): string | null {
   return (
+    payload.data?.paymentData?.transaction?.paymentURL ??
     payload.data?.paymentUrl ??
     payload.data?.checkoutUrl ??
     payload.data?.redirectUrl ??
@@ -81,7 +96,7 @@ export class JamezzClient {
     const body = new FormData();
     body.set("session_mid", table);
     body.set("session_return_path", `${JAMEZZ_ORIGIN}/v5/qr/${table}/return`);
-    const result = await fetchJson<{ readonly uuid?: string }>(`${JAMEZZ_ORIGIN}/v5_2/shopping-cart`, {
+    const result = await fetchJson<CartResponse>(`${JAMEZZ_ORIGIN}/v5_2/shopping-cart`, {
       method: "POST",
       headers: sessionHeaders(table, null),
       body,
@@ -91,7 +106,7 @@ export class JamezzClient {
       if (result.kind === "network") throw network("cart open failed", result);
       return null;
     }
-    return result.value.uuid ?? null;
+    return result.value.data?.uuid ?? result.value.uuid ?? null;
   }
 
   prepare(input: {
@@ -127,8 +142,10 @@ export class JamezzClient {
       return null;
     }
     const url = checkoutUrl(result.value);
-    const orderId = result.value.data?.id ?? result.value.id;
-    if (url === null || orderId === undefined) return null;
+    const orderId = result.value.data?.orderId ?? result.value.data?.id ?? result.value.id;
+    if (url === null || orderId === undefined || result.value.data?.orderStatus === 0) {
+      return null;
+    }
     return {
       orderId: String(orderId),
       checkoutUrl: url,

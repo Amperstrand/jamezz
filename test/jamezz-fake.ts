@@ -22,6 +22,7 @@ const ORIGIN = "https://qrv5.jamezz.app";
 export interface FakeJamezzOptions {
   readonly salesareaOverride?: Record<string, unknown>;
   readonly orderResponse?: Record<string, unknown>;
+  readonly cartResponse?: Record<string, unknown>;
   readonly bootstrapStatus?: number;
 }
 
@@ -121,13 +122,31 @@ export function fakeJamezz(options: FakeJamezzOptions = {}): {
       return jsonResponse(isFreshSnapshot ? menuPayload : { status: "ok", data: [] });
     }
     if (method === "POST" && url === `${ORIGIN}/v5_2/shopping-cart`) {
-      return jsonResponse({ status: "ok", uuid: "synthetic-cart-uuid" });
+      return jsonResponse(
+        options.cartResponse ?? {
+          status: "ok",
+          data: { uuid: "synthetic-cart-uuid", transactions: [], state: "cart" },
+        },
+      );
     }
     if (method === "POST" && url === `${ORIGIN}/v5_2/kiosk/order`) {
       return jsonResponse(
         options.orderResponse ?? {
           status: "ok",
-          data: { id: 424242, paymentUrl: "https://pay.example/mollie/session/synthetic" },
+          data: {
+            orderStatus: 1,
+            requestPayment: 1,
+            orderId: 424242,
+            orderValue: 6.4,
+            paymentReady: 1,
+            paymentData: {
+              request: { result: 1, method: "creditcard" },
+              transaction: {
+                paymentURL: "https://pay.example/mollie/session/synthetic",
+                transid: "tr_synthetic",
+              },
+            },
+          },
         },
       );
     }

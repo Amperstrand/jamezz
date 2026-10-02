@@ -14,6 +14,7 @@ export function cartTotal(lines: readonly CartLine[]): number {
 
 export function buildOrderBody(draft: OrderDraft): Readonly<Record<string, unknown>> {
   const items = draft.lines.map((line) => ({
+    uuid: crypto.randomUUID(),
     count: line.quantity,
     added_origin: "MENU",
     note: "",
@@ -22,7 +23,15 @@ export function buildOrderBody(draft: OrderDraft): Readonly<Record<string, unkno
     article: { id: line.productId, name: line.name, price: line.unitPrice },
     extraOrderArticles: [],
     orderOptionGroups: line.optionProductIds.map((optionId) => ({
-      orderArticles: [{ count: 1, article: { id: optionId }, extraOrderArticles: [], orderOptionGroups: [] }],
+      orderArticles: [
+        {
+          uuid: crypto.randomUUID(),
+          count: 1,
+          article: { id: optionId },
+          extraOrderArticles: [],
+          orderOptionGroups: [],
+        },
+      ],
     })),
   }));
   const total = cartTotal(draft.lines);
