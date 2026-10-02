@@ -18,21 +18,38 @@
 | `84608JJ` | Omami Ulricehamn — Webshop (Leading) | Ulricehamn, SE | MOLLIE (SEK) |
 | `487MVV` | Anne&Max Utrecht Domkwartier — Afhalen V5 | Utrecht Domkwartier, NL | MOLLIE |
 | `489URT` | Anne&Max Leidschendam — Webshop afhalen | Liguster 62, 2262 Leidschendam, NL | MOLLIE |
+| `5664DQG` | De Griekse Frituur O Geros — CATALOG | Vennestraat 1, 3600 Genk, BE | CM |
+| `4239RHK` | ORCHIDEE THAI BV | Almere, NL | PAYNL |
+| `7774HRA` | Mazzeltov Webshop | De Stok 4, 4703 SZ Roosendaal, NL | MOLLIE |
+| `326HS2` | WIM FRIET — Webshop (Tafel 1) | Dokter Jules Persynplein, 9185 Wachtebeke, BE | PAYNL |
+| `7378ZVM` | Omami Varberg — Webshop | Varberg, SE | MOLLIE (SEK) |
+| `1881RKN` | Il Mercato — Afhalen | NL (3-branch chain, branch not identified) | MOLLIE |
+| `87674F` | Il Mercato — Bezorgen | NL (3-branch chain, branch not identified) | MOLLIE |
+| `476WWU` | Anne&Max Amsterdam Zuid — Webshop afhalen V5 | Amsterdam Zuid, NL | MOLLIE |
+| `81497N3` | Anne&Max Eindhoven Strijp-S — Afhalen | Eindhoven Strijp-S, NL | MOLLIE |
+| `2029G5T` | Schnitzel / Lunchkoning — Menukaart | Tiel, NL | CM (ordering offline at read) |
+| `8570ZSY` | TasToe — Bedrijven | Marktplein 14, 's-Gravenzande, NL | MOLLIE |
+| `8402YDM` | Krakeel Hoogeveen — Vectron Webshop | Hoogeveen, NL | MOLLIE |
+| `6395VGP` | Friethuis Pruis — Webshop afhaal | NL (city not confirmed) | MOLLIE |
+| `5750FMD` | Smokey Blinders — Webshop Afhalen | Rapportstraat 3, 5504 BN Zeelst (Veldhoven), NL | CM |
+| `56699YH` | La Place Efteling — QR (Tafel 227) | Efteling, Kaatsheuvel, NL | OMNIKASSA (ordering offline at read) |
+| `7229MSB` | Burger Bar Prinsengracht — QR boatmenu | Prinsengracht, Amsterdam, NL | MOLLIE |
+| `5779SPH` | Smakers — Twijnstraat & Oude Gracht | Utrecht, NL | CM (ordering offline at read) |
+| `6983CS7` | Snackhoek — Webshop afhaal | NL (city not confirmed) | MOLLIE |
 
-`8613S3X` was photographed; the other thirteen mids are venue-published
-(Google-indexed QR pages under `qrv5.jamezz.app/v5/qr/…` and
-`jamezz.app/dl/…` redirects), each verified by a live read — venue name,
-currency, and at least one real price — on 2026-10-02. The 2026-10-02
-batch (jamezz#6) added ten venues across NL / BE / DK / SE and the first
-DKK and SEK rows: Summio Parc Heihaas snackbar (Pizza Margherita
-12.50 EUR), three Jumbo Koornneef webshops (Goat cheese salad 5.75 EUR /
-Breakfast deal 3.99 EUR), Søgaard Bryghus Aalborg (Bun with butter
-17.00 DKK), Dickenz Scharendijke (frappuccino 5.95 EUR), PAPAVESS
-Scherpenheuvel (Poke Bowl Medium 12.50 EUR, matches the venue's own
-menu PDF), Omami Ulricehamn (Sushi Pop California Roll 169.00 SEK), and
-two Anne&Max branches (Pastrami Sandwich 12.50 EUR). `540BEQ`
-("hello alpha", CHF, Stripe) is the platform's own demo surface —
-documented here, deliberately not cataloged.
+`8613S3X` was photographed; every other mid is venue-published (Google-indexed
+QR pages under `qrv5.jamezz.app/v5/qr/…`, `jamezz.app/dl/…` redirects, or a
+venue's own indexed Jamezz session page), each verified by a live read —
+venue name, currency, and at least one real price. Round 1 (2026-10-02,
+jamezz#6) added ten venues and the first DKK and SEK rows; round 2
+(2026-10-02, follow-up) added eighteen more: two more Anne&Max branches,
+a second Omami (Varberg, SEK), the La Place Efteling table QR (Tafel 227,
+OMNIKASSA), two Belgian frituren (O Geros Genk, Wim Friet Wachtebeke — the
+latter's own site advertises Jamezz QR at every table), and the first CM
+and PAYNL checkout rows. Cities that could not be confirmed from public
+sources are marked as such rather than guessed. `540BEQ` ("hello alpha",
+CHF, Stripe) is the platform's own demo surface — documented here,
+deliberately not cataloged.
 
 ## Burgermeister locations
 
