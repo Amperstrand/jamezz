@@ -13,9 +13,9 @@ been seen); the order flow is the same.
    `https://jamezz.app/dl/{mid}`. This is the only guaranteed method.
 2. **Search the indexed QR pages.** Google indexes `qrv5.jamezz.app/v5/qr/…`
    menu pages. Worked queries: `site:qrv5.jamezz.app <brand or dish>`,
-   `"jamezz.app/dl" <city>`. Known indexed examples: `4577SVC` (van der
-   Valk, EUR), `540BEQ` (Swiss venue, CHF), `8613S3X` (Burgermeister
-   Mehringdamm).
+   `"jamezz.app/dl" <city>`. This method is proven: three of the four
+   cataloged tables were found this way (see docs/VENUES.md) — Van der
+   Valk hotels publish their QR pages and Google indexes them.
 3. **Brand sites and socials.** Venues link their QR URL from their own
    website, Instagram bio, or even their LinkedIn homepage.
 4. **Named Jamezz chains** (from Jamezz's own marketing, mostly NL for now):

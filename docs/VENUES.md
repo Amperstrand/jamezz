@@ -1,4 +1,20 @@
-# Burgermeister locations
+# Venues
+
+## Mapped Jamezz tables (live-verified)
+
+| Table mid | Venue | Address | Checkout |
+|---|---|---|---|
+| `8613S3X` | Burgermeister Mehringdamm (Tafel 1) | Mehringdamm 39, 10961 Berlin | MOLLIE |
+| `8329DHW` | Van der Valk Gent — Limoncello Take Away | Akkerhage 10, 9000 Gent, BE | ADYEN |
+| `5960PM3` | Van der Valk Gent — Roomservice Cocotte | Akkerhage 10, 9000 Gent, BE | ADYEN (room charge) |
+| `4577SVC` | van der Valk Gilze-Tilburg — Toekan To Go | Gilze-Tilburg, NL | ADYEN |
+
+`8613S3X` was photographed; the other three mids are venue-published
+(Google-indexed QR pages), each verified by a live read on 2026-10-02
+(name, currency, real prices). `540BEQ` ("hello alpha", CHF, Stripe) is the
+platform's own demo surface — documented here, deliberately not cataloged.
+
+## Burgermeister locations
 
 Source: burgermeister.com location list, captured 2026-09-30. Addresses are
 public. A Jamezz QR mid is not. Only Mehringdamm table 1 is mapped.

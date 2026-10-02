@@ -13,13 +13,36 @@ export interface UnmappedLocation {
   readonly status: "open" | "coming-soon";
 }
 
-/** Tables whose QR was photographed. Add a row only after reading the code. */
+/**
+ * Mapped tables: photographed QRs or mids verifiably published by the venue
+ * itself (Google-indexed QR pages, venue websites). Every row was confirmed
+ * by a live read: venue name, currency, and real menu prices. Never guess
+ * or derive a mid.
+ */
 export const KNOWN_TABLES = [
   {
     mid: "8613S3X" as TableMid,
     name: "Burgermeister Mehringdamm (Tafel 1)",
     address: "Mehringdamm 39, 10961 Berlin",
-    note: "Only mapped table QR as of 2026-09-30.",
+    note: "Photographed table QR, 2026-09-30. MOLLIE checkout.",
+  },
+  {
+    mid: "8329DHW" as TableMid,
+    name: "Van der Valk Gent — Limoncello Take Away",
+    address: "Akkerhage 10, 9000 Gent, Belgium",
+    note: "Venue-published QR page (verified 2026-10-02: Pizza Margherita 20.50 EUR). ADYEN checkout.",
+  },
+  {
+    mid: "5960PM3" as TableMid,
+    name: "Van der Valk Gent — Roomservice Cocotte",
+    address: "Akkerhage 10, 9000 Gent, Belgium",
+    note: "Venue-published QR page (verified 2026-10-02: Whisky Sour 13.00 EUR). Room-charge mode, ADYEN.",
+  },
+  {
+    mid: "4577SVC" as TableMid,
+    name: "van der Valk Gilze-Tilburg — Toekan To Go",
+    address: "Gilze-Tilburg, Netherlands",
+    note: "Venue-published QR page (verified 2026-10-02: Burrata 13.25 EUR). ADYEN checkout.",
   },
 ] as const satisfies readonly KnownTable[];
 

@@ -43,8 +43,10 @@ Conventions:
 - Fakes are routers with request logs (`test/transport-fake.ts` helpers);
   assert on the wire, not on internals. A 200 is not a success
   (swallowed-error responses are pinned as tests).
-- New venues: follow `prompts/onboard-table.md`. Never guess or derive a
-  mid — only add rows for QR codes someone actually photographed.
+- New venues: follow `prompts/onboard-table.md`. A catalog row requires a
+  photographed QR **or** a mid verifiably published by the venue (indexed
+  QR page, venue site) plus a live read confirming name, currency, and real
+  prices. Never guess or derive a mid.
 
 ## Commits and CI
 
