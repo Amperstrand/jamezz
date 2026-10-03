@@ -46,7 +46,9 @@ re-implementing it: `encodeOrderIntent()` / `orderIntentMessage()` in
 `src/order-intent.ts`, domain `DROPSHOP-ORDER-INTENT/v1`. The byte layout is
 the same scheme as the exchange's `plugin-trust-ring/prove.ts orderMessage`:
 the UTF-8 domain tag raw, then every field as uint32 big-endian length +
-UTF-8 bytes in fixed order — orderId, venueId (the jamezz QR mid), itemCount,
+UTF-8 bytes in fixed order — orderId, platform ("jamezz" — venue ids are
+platform-scoped; added before any production signature existed, per the
+Numo#1 contract note), venueId (the jamezz QR mid), itemCount,
 per item {menuItemId, quantity, optionCount, option ids}, fulfillment,
 total, currency, emailHash, createdAt, expiresAt, pin.setId,
 pin.contentHash. `orderIntentMessage()` returns sha256(preimage): the bytes

@@ -10,10 +10,14 @@ import type { Fulfillment, TableMid, TrustSetPin } from "./types.js";
  * length + UTF-8 bytes, in the fixed order below. `orderIntentMessage`
  * returns sha256(preimage) — the bytes a signature covers.
  *
- * Field order: orderId, venueId, itemCount, then per item {menuItemId,
- * quantity, optionCount, option ids...}, fulfillment, total, currency,
- * emailHash, createdAt, expiresAt, pin.setId, pin.contentHash.
+ * Field order: orderId, platform, venueId, itemCount, then per item
+ * {menuItemId, quantity, optionCount, option ids...}, fulfillment, total,
+ * currency, emailHash, createdAt, expiresAt, pin.setId, pin.contentHash.
  * Counts and quantities are decimal strings through the same prefixing.
+ *
+ * `platform` scopes the venue identity (jamezz QR mid; GastroNova unit id,
+ * OrderMonkey org+branch elsewhere) — added before any production
+ * signature existed, per the Numo#1 contract note.
  *
  * `total` is a decimal string in ISO-4217 minor units taken from the
  * server's quote ("1440", never "14.40" and never client math).
@@ -28,6 +32,8 @@ export interface OrderIntentItem {
 
 export interface OrderIntent {
   readonly orderId: string;
+  /** Platform discriminator — venue ids are platform-scoped. */
+  readonly platform: "jamezz";
   readonly venueId: TableMid;
   readonly items: readonly OrderIntentItem[];
   readonly fulfillment: Fulfillment;
@@ -68,7 +74,7 @@ function intentFields(intent: OrderIntent): string[] {
     }
   }
 
-  const fields: string[] = [intent.orderId, intent.venueId, String(intent.items.length)];
+  const fields: string[] = [intent.orderId, intent.platform, intent.venueId, String(intent.items.length)];
   for (const [index, item] of intent.items.entries()) {
     if (!Number.isInteger(item.quantity) || item.quantity < 1) {
       throw new Error(`order intent items[${index}].quantity must be an integer >= 1`);

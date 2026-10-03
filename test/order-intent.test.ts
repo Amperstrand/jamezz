@@ -4,6 +4,7 @@ import { tableMid } from "../src/types.js";
 
 const intent = {
   orderId: "synthetic-order-id",
+  platform: "jamezz" as const,
   venueId: tableMid("8613S3X"),
   items: [
     { menuItemId: "101", quantity: 2, options: ["201", "202"] },
@@ -26,6 +27,7 @@ describe("encodeOrderIntent", () => {
     expect(hex(encodeOrderIntent(intent))).toBe(
       "44524f5053484f502d4f524445522d494e54454e542f7631" +
         "0000001273796e7468657469632d6f726465722d6964" +
+        "000000066a616d657a7a" +
         "0000000738363133533358" +
         "0000000132" +
         "00000003313031" +
@@ -73,7 +75,7 @@ describe("encodeOrderIntent", () => {
 describe("orderIntentMessage", () => {
   it("is sha256 of the preimage — the bytes a signature covers (golden)", () => {
     expect(hex(orderIntentMessage(intent))).toBe(
-      "085771fa7e4ecf24fe677e91cc14652e6aba2fc237e3535ce06b12db61c9b1a8",
+      "5a00d4ec1f459d2abfd4eb04408b014c8391574647edc0364e6d65e7a8016f01",
     );
   });
 });
