@@ -55,6 +55,34 @@ export interface CartLine {
 
 export type Fulfillment = "eat-in" | "take-away";
 
+/** Reference to a pinned trust set (NIP-51 kind 30000, id + content hash). */
+export interface TrustSetPin {
+  readonly setId: string;
+  readonly contentHash: string;
+}
+
+/**
+ * Platform-supplied attestation (issue #7). Opaque passthrough: this SDK
+ * carries it and digests it, and never verifies it — the pin and the policy
+ * are deployment properties of the platform layer. The proof shape is
+ * platform-defined (LSAG ring today, plain schnorr if the ring is retired),
+ * so everything except the optional pin travels as an open record.
+ */
+export interface OrderAttestation {
+  readonly pin?: TrustSetPin;
+  readonly [field: string]: unknown;
+}
+
+/**
+ * Audit record derived from an OrderAttestation: sha256 over the canonical
+ * JSON encoding of the attestation. Persist this, never the verdict —
+ * verification lives above the SDK.
+ */
+export interface AttestationDigest {
+  readonly algorithm: "sha256";
+  readonly digest: string;
+}
+
 export interface OrderDraft {
   readonly table: TableMid;
   readonly lines: readonly CartLine[];
@@ -62,6 +90,7 @@ export interface OrderDraft {
   readonly email: string;
   readonly cartUuid: string;
   readonly payMethod: "creditcard";
+  readonly attestation?: OrderAttestation;
 }
 
 export interface PreparedOrder {
@@ -70,12 +99,14 @@ export interface PreparedOrder {
   readonly currency: string;
   readonly endpoint: string;
   readonly body: Readonly<Record<string, unknown>>;
+  readonly attestation?: AttestationDigest;
 }
 
 export interface PaymentHandoff {
   readonly orderId: string;
   readonly checkoutUrl: string;
   readonly note: string;
+  readonly attestation?: AttestationDigest;
 }
 
 export interface CashuEmailAccount {

@@ -1,4 +1,5 @@
 import { JAMEZZ_ORIGIN } from "./http.js";
+import { attestationDigest } from "./attestation.js";
 import type { CartLine, Fulfillment, OrderDraft, PreparedOrder, TableMid } from "./types.js";
 
 export const ORDER_ENDPOINT = `${JAMEZZ_ORIGIN}/v5_2/kiosk/order`;
@@ -68,6 +69,9 @@ export function prepareOrder(draft: OrderDraft, currency: string): PreparedOrder
     currency,
     endpoint: ORDER_ENDPOINT,
     body: buildOrderBody(draft),
+    ...(draft.attestation === undefined
+      ? {}
+      : { attestation: attestationDigest(draft.attestation) }),
   };
 }
 
@@ -85,6 +89,7 @@ export function draftFromLines(input: {
   readonly fulfillment: Fulfillment;
   readonly email: string;
   readonly cartUuid: string;
+  readonly attestation?: OrderDraft["attestation"];
 }): OrderDraft {
   if (input.lines.length === 0) throw new Error("order needs at least one line");
   return {
@@ -94,5 +99,6 @@ export function draftFromLines(input: {
     email: assertOwnEmail(input.email),
     cartUuid: input.cartUuid,
     payMethod: "creditcard",
+    ...(input.attestation === undefined ? {} : { attestation: input.attestation }),
   };
 }

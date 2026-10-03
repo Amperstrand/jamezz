@@ -77,3 +77,8 @@ the wire contract, and stay leak-gate clean.
   `data.paymentData.transaction.paymentURL`. Encode the new shape in the
   fake, keep one fallback test for the legacy shape, and make the
   swallowed-error 200 a test — a 200 is not a success.
+- Trust material rides above the SDK (issue #7): an attestation passes
+  through prepare/submit as a sha256 digest over canonical JSON and must
+  never appear in the venue wire body — assert its absence on the recorded
+  request, exactly like card fields, or a future body refactor will leak
+  it to a live kitchen endpoint.

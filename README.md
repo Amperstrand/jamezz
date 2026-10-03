@@ -43,6 +43,8 @@ the client owns its session and re-bootstraps on a delta-empty menu.
 Start here to place an order end to end with your own card:
 [docs/PARTICIPANT-GUIDE.md](docs/PARTICIPANT-GUIDE.md).
 Ordering details: [docs/ORDERING.md](docs/ORDERING.md).
+The adapter boundary and attestation passthrough (issue #7):
+[docs/ADAPTER-BOUNDARY.md](docs/ADAPTER-BOUNDARY.md).
 More venues in Berlin and Germany: [docs/CANDIDATES.md](docs/CANDIDATES.md).
 How the method was found, and the prompts to repeat it: [docs/HOW.md](docs/HOW.md).
 Locations: [docs/VENUES.md](docs/VENUES.md).

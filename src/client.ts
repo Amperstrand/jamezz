@@ -2,7 +2,7 @@ import { asTransportError, JamezzError } from "./error.js";
 import { fetchJson, JAMEZZ_ORIGIN, sessionHeaders } from "./http.js";
 import { menuFromPayload, type RawMenuPayload, type RawSalesarea } from "./menu.js";
 import { draftFromLines, ORDER_ENDPOINT, prepareOrder } from "./order.js";
-import { tableMid, type CartLine, type Fulfillment, type Menu, type PaymentHandoff, type PreparedOrder, type TableMid, type Venue } from "./types.js";
+import { tableMid, type CartLine, type Fulfillment, type Menu, type OrderDraft, type PaymentHandoff, type PreparedOrder, type TableMid, type Venue } from "./types.js";
 import { knownTable, KNOWN_TABLES } from "./venues.js";
 
 export { KNOWN_TABLES };
@@ -116,6 +116,7 @@ export class JamezzClient {
     readonly email: string;
     readonly cartUuid: string;
     readonly currency: string;
+    readonly attestation?: OrderDraft["attestation"];
   }): PreparedOrder {
     return prepareOrder(draftFromLines(input), input.currency);
   }
@@ -150,6 +151,7 @@ export class JamezzClient {
       orderId: String(orderId),
       checkoutUrl: url,
       note: "Open checkoutUrl and pay with your own card. This client stops here.",
+      ...(prepared.attestation === undefined ? {} : { attestation: prepared.attestation }),
     };
   }
 

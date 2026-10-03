@@ -203,4 +203,52 @@ describe("cart and order", () => {
     });
     expect(await c.submit(prepared, SYNTHETIC_SESSION_COOKIE)).toBeNull();
   });
+
+  it("carries an attestation digest through submit() and keeps it off the venue wire (issue #7)", async () => {
+    const { fetchImpl, requests } = fakeJamezz();
+    const c = client(fetchImpl);
+    const attestation = {
+      pin: { setId: "table-order-vendors-berlin", contentHash: "synthetic-set-hash" },
+      proof: {
+        c0: "synthetic-c0",
+        keyImage: "synthetic-key-image",
+        responses: ["r-one", "r-two"],
+        ring: ["member-one", "member-two", "member-three"],
+      },
+    };
+    const prepared = c.prepare({
+      table: burgermeisterTable(),
+      lines: [{ productId: "101", name: "Cheeseburger", unitPrice: 6.4, quantity: 1, optionProductIds: [] }],
+      fulfillment: "eat-in",
+      email: "guest@example.test",
+      cartUuid: "synthetic-cart-uuid",
+      currency: "EUR",
+      attestation,
+    });
+    const handoff = await c.submit(prepared, SYNTHETIC_SESSION_COOKIE);
+    expect(handoff?.attestation).toEqual({
+      algorithm: "sha256",
+      digest: "a28818c7290d74672954d1d881cf3bd7ddb63d95cfc73ea0b255d7853c768c2f",
+    });
+    const post = sent(requests, "/v5_2/kiosk/order");
+    expect(typeof post?.body).toBe("string");
+    expect(post?.body).not.toContain("attestation");
+    expect(post?.body).not.toContain("synthetic-key-image");
+    expect(post?.body).not.toContain("table-order-vendors-berlin");
+  });
+
+  it("omits the attestation record on the handoff when the draft carried none", async () => {
+    const { fetchImpl } = fakeJamezz();
+    const c = client(fetchImpl);
+    const prepared = c.prepare({
+      table: burgermeisterTable(),
+      lines: [{ productId: "101", name: "Cheeseburger", unitPrice: 6.4, quantity: 1, optionProductIds: [] }],
+      fulfillment: "eat-in",
+      email: "guest@example.test",
+      cartUuid: "synthetic-cart-uuid",
+      currency: "EUR",
+    });
+    const handoff = await c.submit(prepared, SYNTHETIC_SESSION_COOKIE);
+    expect(handoff?.attestation).toBeUndefined();
+  });
 });

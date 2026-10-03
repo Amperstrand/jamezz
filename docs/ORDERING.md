@@ -115,6 +115,19 @@ cookie handling is needed (one can still be passed explicitly). If the URL
 is missing, stop and read the response. A `JamezzError` (reason `"network"`)
 means the platform was unreachable; a null return means it answered.
 
+### Attestation passthrough (issue #7)
+
+`prepare()` also accepts an optional `attestation`: an opaque,
+platform-owned proof object (see
+[docs/ADAPTER-BOUNDARY.md](ADAPTER-BOUNDARY.md)). This client never
+verifies it — verification lives in the platform layer, before the order
+reaches this SDK's `submit()`. The client derives a sha256 digest over the
+attestation's canonical JSON and carries that digest on the
+`PreparedOrder` and on the handoff `submit()` returns, so the audit record
+can bind a venue order to the proof it was gated on. The attestation
+itself is never sent to the venue API; a test asserts its absence on the
+wire, the same way card fields are asserted absent.
+
 Terms shown by the venue: `https://www.jamezz.nl/pdf/av.pdf` and
 `https://www.jamezz.nl/pdf/pv.pdf`.
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildOrderBody, cartTotal, draftFromLines } from "../src/order.js";
+import { buildOrderBody, cartTotal, draftFromLines, prepareOrder } from "../src/order.js";
 import { tableMid } from "../src/types.js";
 
 const line = {
@@ -9,6 +9,16 @@ const line = {
   quantity: 1,
   optionProductIds: ["200"],
 } as const;
+
+const attestation = {
+  pin: { setId: "table-order-vendors-berlin", contentHash: "synthetic-set-hash" },
+  proof: {
+    c0: "synthetic-c0",
+    keyImage: "synthetic-key-image",
+    responses: ["r-one", "r-two"],
+    ring: ["member-one", "member-two", "member-three"],
+  },
+};
 
 describe("buildOrderBody", () => {
   it("prices the cart and marks card payment without storing a card", () => {
@@ -49,5 +59,55 @@ describe("buildOrderBody", () => {
         cartUuid: "cart-1",
       }),
     ).toThrow(/address you control/);
+  });
+});
+
+describe("attestation passthrough (issue #7)", () => {
+  it("records a sha256 digest on the prepared order but never verifies or inspects the proof", () => {
+    const prepared = prepareOrder(
+      draftFromLines({
+        table: tableMid("8613S3X"),
+        lines: [line],
+        fulfillment: "eat-in",
+        email: "guest@example.test",
+        cartUuid: "cart-1",
+        attestation,
+      }),
+      "EUR",
+    );
+    expect(prepared.attestation).toEqual({
+      algorithm: "sha256",
+      digest: "a28818c7290d74672954d1d881cf3bd7ddb63d95cfc73ea0b255d7853c768c2f",
+    });
+  });
+
+  it("leaves the prepared order without an attestation record when none was given", () => {
+    const prepared = prepareOrder(
+      draftFromLines({
+        table: tableMid("8613S3X"),
+        lines: [line],
+        fulfillment: "eat-in",
+        email: "guest@example.test",
+        cartUuid: "cart-1",
+      }),
+      "EUR",
+    );
+    expect(prepared.attestation).toBeUndefined();
+  });
+
+  it("keeps the attestation off the venue wire — the kiosk/order body carries no proof fields", () => {
+    const draft = draftFromLines({
+      table: tableMid("8613S3X"),
+      lines: [line],
+      fulfillment: "eat-in",
+      email: "guest@example.test",
+      cartUuid: "cart-1",
+      attestation,
+    });
+    const body = JSON.stringify(buildOrderBody(draft));
+    expect(body).not.toContain("attestation");
+    expect(body).not.toContain("synthetic-key-image");
+    expect(body).not.toContain("synthetic-set-hash");
+    expect(body).not.toMatch(/pan|cvc|cardnumber/i);
   });
 });
