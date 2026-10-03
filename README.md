@@ -49,7 +49,7 @@ Locations: [docs/VENUES.md](docs/VENUES.md).
 Prompts (onboarding a table, a new platform, mapping a brand, cheapest test
 order, writing the tests): [prompts/](prompts/).
 
-Requires Node.js 22. `npm test` runs against synthetic payloads only.
+The catalog carries 75 live-verified tables across multiple chains. Requires Node.js 22. `npm test` runs against synthetic payloads only.
 
 Part of the [mcp.cashu.exchange](https://github.com/Amperstrand/mcp-cashu-exchange)
 architecture — the full system diagram lives in that repo's README.
