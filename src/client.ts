@@ -75,6 +75,7 @@ export class JamezzClient {
       currency: salesarea.valuta ?? "EUR",
       payProvider: salesarea.payProvider ?? "MOLLIE",
       orderingEnabled: (salesarea.systemOnline ?? 1) === 1,
+      paymentEnabled: known?.paymentEnabled ?? false,
       website: `https://jamezz.app/dl/${table}`,
       ...(known === undefined ? {} : { address: known.address }),
     };

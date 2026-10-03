@@ -18,6 +18,8 @@ export interface Venue {
   readonly currency: string;
   readonly payProvider: string;
   readonly orderingEnabled: boolean;
+  /** True only for venues wired to the bridge (real payment loop). Others are menu-read-only. */
+  readonly paymentEnabled: boolean;
   readonly website: string;
   readonly address?: string;
 }

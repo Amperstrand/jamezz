@@ -5,6 +5,8 @@ export interface KnownTable {
   readonly name: string;
   readonly address: string;
   readonly note: string;
+  /** True when the bridge can take payment (Lightning → 2fiat → hosted checkout). */
+  readonly paymentEnabled?: boolean;
 }
 
 export interface UnmappedLocation {
@@ -25,6 +27,7 @@ export const KNOWN_TABLES = [
     name: "Burgermeister Mehringdamm (Tafel 1)",
     address: "Mehringdamm 39, 10961 Berlin",
     note: "Photographed table QR, 2026-09-30. MOLLIE checkout.",
+    paymentEnabled: true,
   },
   {
     mid: "8329DHW" as TableMid,

@@ -38,6 +38,7 @@ function printVenue(venue: Venue, out: (line: string) => void): void {
   out(`  currency: ${venue.currency}`);
   out(`  pays via: ${venue.payProvider} hosted checkout`);
   out(`  online:   ${venue.orderingEnabled ? "yes" : "no"}`);
+  out(`  payment:  ${venue.paymentEnabled ? "live (bridge)" : "menu-only"}`);
   out(`  url:      ${venue.website}`);
 }
 
