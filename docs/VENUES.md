@@ -36,19 +36,64 @@
 | `7229MSB` | Burger Bar Prinsengracht — QR boatmenu | Prinsengracht, Amsterdam, NL | MOLLIE |
 | `5779SPH` | Smakers — Twijnstraat & Oude Gracht | Utrecht, NL | CM (ordering offline at read) |
 | `6983CS7` | Snackhoek — Webshop afhaal | NL (city not confirmed) | MOLLIE |
+| `3500EUN` | Anne&Max Den Bosch — Afhalen V5 | Den Bosch, NL | CM |
+| `40306FP` | Anne&Max Den Haag Hoytema — Afhalen V5 | Den Haag, NL | MOLLIE |
+| `412FBF` | Anne&Max Alkmaar — Bezorgen V5 | Alkmaar, NL | MOLLIE |
+| `41853R` | Anne&Max Bakkerstraat Arnhem — Bezorgen V5 | Arnhem, NL | MOLLIE |
+| `423U5F` | Anne&Max Eindhoven — Bezorgen V5 | Eindhoven, NL | MOLLIE |
+| `4481969` | Anne&Max Groningen — Afhalen V5 | Groningen, NL | MOLLIE |
+| `471X1A` | Anne&Max Alkmaar — Afhalen V5 | Alkmaar, NL | MOLLIE |
+| `472S8X` | Anne&Max Bakkerstraat Arnhem — Afhalen V5 | Arnhem, NL | MOLLIE |
+| `475TXS` | Anne&Max Amsterdam Zeeburg — Afhalen V5 | Amsterdam, NL | MOLLIE |
+| `4771UEG` | Anne&Max Delft — Afhalen V5 | Delft, NL | MOLLIE |
+| `477FY3` | Anne&Max Apeldoorn — Webshop afhalen | Apeldoorn, NL | MOLLIE |
+| `47811U` | Anne&Max Breda Wilhelminastraat — Webshop afhalen | Breda, NL | MOLLIE |
+| `479C5N` | Anne&Max Den Haag Fahrenheit — Afhalen V5 | Den Haag, NL | MOLLIE |
+| `480GFN` | Anne&Max Den Haag Fred — Afhalen V5 | Den Haag, NL | MOLLIE |
+| `481EF9` | Anne&Max Den Haag Kerkplein — Afhalen V5 | Den Haag, NL | MOLLIE |
+| `482WSP` | Anne&Max Eindhoven — Afhalen V5 | Eindhoven, NL | MOLLIE |
+| `483S4C` | Anne&Max Haarlem — Webshop afhalen | Haarlem, NL | MOLLIE |
+| `484ZS8` | Anne&Max Leiden — Afhalen V5 | Leiden, NL | MOLLIE |
+| `485RTW` | Anne&Max Rotterdam — Webshop afhalen V5 | Rotterdam, NL | MOLLIE |
+| `4868RD` | Anne&Max Utrecht Burgemeester Reiger — Afhalen V5 | Utrecht, NL | MOLLIE |
+| `488QYG` | Anne&Max Zwolle — Afhalen V5 | Zwolle, NL | MOLLIE |
+| `5449JAA` | Anne&Max Oostenburg — Afhalen V5 | Amsterdam, NL | MOLLIE |
+| `5555VVY` | Anne&Max Tilburg — Webshop afhalen | Tilburg, NL | MOLLIE |
+| `6746ST3` | Anne&Max Nijmegen — Webshop afhalen | Nijmegen, NL | MOLLIE |
+| `7396EHR` | Anne&Max Breda Veemarktstraat — Webshop afhalen | Breda, NL | MOLLIE |
+| `7745CED` | Anne&Max Leeuwarden — Afhaal | Leeuwarden, NL | MOLLIE |
+| `81476E9` | Anne&Max Arnhem Steenstraat — Afhalen | Arnhem, NL | MOLLIE |
+| `8924NWV` | Anne&Max Maastricht — Webshop (take-away) | Maastricht, NL | MOLLIE |
+| `9511X1R` | Anne&Max Eindhoven Strijp-S — Catering webshop | Eindhoven, NL | MOLLIE |
+| `9512JZC` | Anne&Max Apeldoorn — Catering webshop | Apeldoorn, NL | MOLLIE |
+| `73819BK` | Omami Johanneberg — Webshop (Leading) | Johanneberg, Jönköping, SE | MOLLIE (SEK) |
+| `7384ZPR` | Omami Brämhult — Webshop | Brämhult, Borås, SE | MOLLIE (SEK) |
+| `8316ADD` | Omami Linne — Webshop | Sweden (city not confirmed) | MOLLIE (SEK) |
+| `8810PKE` | Omami Central — Webshop (Leading) | Sweden (city not confirmed) | MOLLIE (SEK) |
+| `6905NCW` | Klein Paramaribo — Afhaal | Netherlands (city not confirmed) | MOLLIE |
+| `59357VD` | Eetcafé de Maaspoort V5 | Grave, NL | MOLLIE |
+| `8823T2W` | Het Friethuys Herpen — Afhalen | Herpen, NL | CM |
+| `7775CMQ` | DHKMP — Webshop Bezorgen (De Heikamp, Ruurlo) | Ruurlo, NL | MOLLIE |
+| `2578ZD4` | DHKMP — Webshop Afhalen (De Heikamp, Ruurlo) | Ruurlo, NL | MOLLIE |
+| `4249H44` | Snackbistro de Toren — Delivery | Netherlands (city not confirmed) | CM |
+| `1116SDA` | Kop van de Haven IJmuiden — Webshop Afhalen (V3) | IJmuiden, NL | MOLLIE |
+| `4486ZZK` | Lorenzo IJssalon — Webshop Afhalen | Rijnlaan 29, 3522 BB Utrecht, NL | MOLLIE (ordering offline at read) |
+| `6275KFA` | EuroParcs De Zanding — Snackbar | EuroParcs De Zanding, NL | MOLLIE |
 
 `8613S3X` was photographed; every other mid is venue-published (Google-indexed
-QR pages under `qrv5.jamezz.app/v5/qr/…`, `jamezz.app/dl/…` redirects, or a
-venue's own indexed Jamezz session page), each verified by a live read —
-venue name, currency, and at least one real price. Round 1 (2026-10-02,
-jamezz#6) added ten venues and the first DKK and SEK rows; round 2
-(2026-10-02, follow-up) added eighteen more: two more Anne&Max branches,
-a second Omami (Varberg, SEK), the La Place Efteling table QR (Tafel 227,
-OMNIKASSA), two Belgian frituren (O Geros Genk, Wim Friet Wachtebeke — the
-latter's own site advertises Jamezz QR at every table), and the first CM
-and PAYNL checkout rows. Cities that could not be confirmed from public
-sources are marked as such rather than guessed. `540BEQ` ("hello alpha",
-CHF, Stripe) is the platform's own demo surface — documented here,
+QR pages under `qrv5.jamezz.app/v5/qr/…`, `jamezz.app/dl/…` redirects, or
+links on the venue's own website), each verified by a live read — venue
+name, currency, and at least one real price. Round 1 (2026-10-02, jamezz#6)
+added ten venues and the first DKK and SEK rows; round 2 (2026-10-02) added
+eighteen more, including La Place Efteling and the first CM / PAYNL /
+OMNIKASSA rows; round 3 (2026-10-03, chain-crawl harvest via
+`prompts/chain-crawl.md`) added forty-three: the Anne&Max chain nearly
+complete (26 more locations plus catering/delivery variants, from
+annemax.nl `/vestigingen/`), four more Ômami SEK webshops (omami.se), and
+nine single venues (Lorenzo IJssalon Utrecht, EuroParcs De Zanding, Eetcafé
+de Maaspoort Grave, and others). Cities that could not be confirmed from
+public sources are marked as such rather than guessed. `540BEQ` ("hello
+alpha", CHF, Stripe) is the platform's own demo surface — documented here,
 deliberately not cataloged.
 
 ## Burgermeister locations
