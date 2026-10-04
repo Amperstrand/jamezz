@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { JamezzClient } from "./client.js";
 import { tableMid, type Menu, type Venue } from "./types.js";
@@ -106,9 +107,19 @@ export async function runCli(
   }
 }
 
-const invokedAsScript =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(process.argv[1]).href;
-if (invokedAsScript) {
+// npm installs the bin as a .bin symlink while Node realpaths the ESM
+// entry — argv[1] must be realpathed before the URL compare or the CLI
+// silently no-ops for real consumers (same bug class as the other
+// Amperstrand platform clients; regression-tested in
+// test/cli-invocation.test.ts).
+function invokedAsScript(): boolean {
+  if (process.argv[1] === undefined) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+if (invokedAsScript()) {
   process.exit(await runCli(process.argv.slice(2)));
 }
