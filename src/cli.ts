@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { JamezzAdapterEngine } from "./adapter-engine.js";
+import { JAMEZZ_ADAPTER, validateAdapter } from "./adapter.js";
 import { JamezzClient } from "./client.js";
 import { tableMid, type Menu, type Venue } from "./types.js";
 import { KNOWN_TABLES } from "./venues.js";
@@ -22,6 +24,9 @@ commands:
   tables            list mapped table QR codes
   venue <mid>       venue config for a table mid
   menu <mid>        menu for a table mid
+  adapter-check <mid>  spec-driven dry-run: read venue+menu THROUGH the
+                      declarative adapter, report field-path hits/misses.
+                      Never opens carts or submits orders.
 
 The mid is the code in the QR URL, e.g. 8613S3X (Burgermeister Mehringdamm).`;
 
@@ -67,6 +72,36 @@ export async function runCli(
       ports.out(`${table.mid}  ${table.name} — ${table.address}`);
     }
     return 0;
+  }
+  if (command === "adapter-check") {
+    if (arg === undefined) {
+      ports.err("adapter-check needs a table mid, e.g. 8613S3X");
+      return 1;
+    }
+    let mid;
+    try {
+      mid = tableMid(arg);
+    } catch {
+      ports.err(`invalid table mid: ${arg}`);
+      return 1;
+    }
+    const problems = validateAdapter(JAMEZZ_ADAPTER);
+    if (problems.length > 0) {
+      ports.err(`adapter spec invalid: ${problems.join("; ")}`);
+      return 1;
+    }
+    const engine = new JamezzAdapterEngine(JAMEZZ_ADAPTER);
+    const dry = await engine.dryRun(mid);
+    if (!dry.ok) {
+      ports.err(`adapter-check failed: ${dry.reason}`);
+      return 1;
+    }
+    ports.out(`spec ${JAMEZZ_ADAPTER.platform}/${JAMEZZ_ADAPTER.generation}: dry-run ok (${dry.steps.join(" -> ")})`);
+    for (const hit of dry.fieldHits) {
+      ports.out(`  ${hit.path}${hit.viaFallback ? " (fallback)" : ""} = ${String(hit.value).slice(0, 60)}`);
+    }
+    for (const miss of dry.fieldMisses) ports.out(`  MISSING ${miss}`);
+    return dry.fieldMisses.length === 0 ? 0 : 1;
   }
   if (command !== "venue" && command !== "menu") {
     ports.err(`unknown command: ${command}`);
