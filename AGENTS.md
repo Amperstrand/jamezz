@@ -94,3 +94,41 @@ CI rejects a push that fails the scan.
   on the card, no human is summoned.
 - The charter above still governs THIS repository: the jamezz SDK stays
   card-free. Everything past the hosted page is the bridge's concern.
+
+## 2fiat API rules (binding — violation gets IPs blocked)
+
+The rig's IP was **permanently blocked** by 2fiat on 2026-10-03 after an
+agent ran automated endpoint enumeration against their API (probing 30+
+undocumented paths for card-reveal functionality). This section exists so
+it never happens again.
+
+**The ONLY 2fiat API calls we ever make:**
+
+| Call | Endpoint | Purpose |
+|---|---|---|
+| Card balance | `GET /api/v1/cards` | Check if the card can cover an order |
+| Create top-up | `POST /api/v1/prepaid-cards/topup/{cardId}` | Get a Lightning invoice for the customer |
+| Invoice status | `GET /invoice/status?invoiceId=…&paymentMethodId=BTC-LN` | Poll until paid |
+
+**NEVER do against 2fiat:**
+
+- **No endpoint scanning or enumeration.** Do not probe paths that aren't
+  listed above. Do not try variations, alternate spellings, or undocumented
+  routes. If an endpoint isn't in the table, it doesn't exist for us.
+- **No card-reveal attempts.** Do not try to programmatically extract PAN,
+  CVV, or expiry from the API. Card details come from the operator via a
+  0600 env file — never from the API. The API masks card numbers by design;
+  fighting that design looks like card fraud and gets IPs blocked.
+- **No rapid-fire requests.** Space all calls at least 2 seconds apart.
+  2fiat is a financial service with fraud detection; rapid automated
+  requests pattern-match to attacks.
+- **No multiple token types on the same endpoint.** Use the wallet token
+  only. Do not test whether other tokens work.
+- **No undocumented API discovery.** If you need something the three
+  endpoints above don't provide, ask the operator to contact 2fiat support.
+  Do not try to find it yourself.
+
+**What we DON'T need from 2fiat:** card details. The Playwright completer
+reads card details from the env file at runtime (memory-only) and fills
+the venue checkout page directly. 2fiat never sees the checkout — they
+only fund the card via Lightning.
