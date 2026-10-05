@@ -92,6 +92,11 @@ CI rejects a push that fails the scan.
   8613S3X only, per-order and daily caps enforced). 3DS frictionless flow
   auto-proceeds; a challenge page fails the order closed — funds remain
   on the card, no human is summoned.
+- **Operator directive 2026-10-04 (supersedes blanket live-fire):** no
+  live venue orders without EXPLICIT operator permission per order.
+  Automated live ordering stays armed but gated; tests and demos run in
+  demo/sim mode. The Sunmi POS is gone — numo testing happens on the
+  ai-legion emulator (AVD numo-bm) or via the spike web UI (:3100).
 - The charter above still governs THIS repository: the jamezz SDK stays
   card-free. Everything past the hosted page is the bridge's concern.
 
