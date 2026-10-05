@@ -32,7 +32,13 @@ describe("venue key records (issue #7 q3)", () => {
 
   it("record bytes are canonical: key order does not change what is signed", () => {
     const record = fixtureRecord();
-    const shuffled = JSON.parse(JSON.stringify(record, Object.keys(record).sort().reverse())) as VenueKeyRecord;
+    const shuffled: VenueKeyRecord = {
+      vendorPubkey: record.vendorPubkey,
+      menuIdentity: { venueName: record.menuIdentity.venueName, generation: record.menuIdentity.generation, origin: record.menuIdentity.origin },
+      issuedAt: record.issuedAt,
+      mid: record.mid,
+      kind: record.kind,
+    };
     expect(recordBytes(record).toString("hex")).toBe(recordBytes(shuffled).toString("hex"));
   });
 
