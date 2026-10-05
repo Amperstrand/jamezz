@@ -16,6 +16,8 @@ and by the numo-bridge POS integration. Read the [README](README.md),
 | `src/order.ts` | order body builder (v2 shapes: per-line uuids) |
 | `src/cli.ts` | read-only CLI (`npx jamezz menu <mid>`) — no order command on purpose |
 | `src/venues.ts` | the venue catalog — data, not code; one row per photographed QR |
+| `src/adapter.ts` | declarative platform adapter spec (issue #7) — data, not code; `adapter-check` dry-runs it live |
+| `src/adapter-engine.ts` | the reviewed engine that consumes an AdapterSpec; structurally refuses dryRun.forbidden endpoints |
 | `test/jamezz-fake.ts` | synthetic transport that encodes the platform quirks |
 | `prompts/` | onboarding recipes (table, new platform, brand, cheapest test, writing tests) |
 | `docs/` | ORDERING · PARTICIPANT-GUIDE · CANDIDATES · VENUES · HOW · PROVENANCE |
