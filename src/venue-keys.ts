@@ -1,4 +1,4 @@
-import { createHash, sign as edSign, verify as edVerify, createPublicKey, type KeyObject } from "node:crypto";
+import { createHash, createPrivateKey, createPublicKey, sign as edSign, verify as edVerify, type KeyObject } from "node:crypto";
 import { canonicalJson } from "./attestation.js";
 import { tableMid, type TableMid } from "./types.js";
 
