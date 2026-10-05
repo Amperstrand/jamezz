@@ -18,13 +18,18 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
     "gate": "node scripts/leak-scan.mjs . --history",
-    "prepare": "tsc -p tsconfig.json"
+    "prepare": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm test && npm run typecheck && node scripts/leak-scan.mjs . --history"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
