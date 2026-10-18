@@ -139,3 +139,31 @@ it never happens again.
 reads card details from the env file at runtime (memory-only) and fills
 the venue checkout page directly. 2fiat never sees the checkout — they
 only fund the card via Lightning.
+
+## Commands
+
+```sh
+npm ci
+npm run typecheck     # tsc --noEmit
+npm run test          # vitest run (offline, synthetic fake)
+npm run build         # tsc -p tsconfig.json
+npm run gate          # scripts/leak-scan.mjs . --history
+```
+
+## Local CI gate
+
+GitHub Actions is org-blocked; the per-PR gate is
+[`scripts/pr-verify.sh`](scripts/pr-verify.sh) (fleet pattern:
+Amperstrand/.github `workflow-templates/local-ci-gate.md`). From a review:
+
+```sh
+scripts/pr-verify.sh <PR-number>    # worktree checkout, legs, PR-comment stamp
+scripts/pr-verify.sh origin/main    # ref mode, table only
+```
+
+Legs: hygiene / deps / typecheck / unit-tests / build / leak-gate. Not
+covered: publish/runtime behaviour and anything live-platform-visible.
+
+## Bench touchpoints
+
+None. Read-only web client — no labgrid places, no devices.
