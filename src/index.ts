@@ -32,5 +32,13 @@ export { JAMEZZ_ADAPTER, validateAdapter, resolveChain } from "./adapter.js";
 export type { AdapterSpec, EndpointTemplate, FieldRule } from "./adapter.js";
 export { JamezzAdapterEngine } from "./adapter-engine.js";
 export type { DryRunResult, FieldHit } from "./adapter-engine.js";
-export { keyFingerprint, recordBytes, signVenueKeyRecord, verifySignedVenueKeyRecord } from "./venue-keys.js";
+export {
+  keyFingerprint,
+  knownVenueKey,
+  recordBytes,
+  registerKnownVenueKey,
+  signVenueKeyRecord,
+  verifySignedVenueKeyRecord,
+  verifyTrustedVenueKeyRecord,
+} from "./venue-keys.js";
 export type { VenueKeyRecord, SignedVenueKeyRecord } from "./venue-keys.js";

@@ -34,9 +34,12 @@ export type VerificationFailure =
   | "unknown-kind"
   | "bad-pubkey"
   | "bad-signature"
-  | "origin-mismatch";
+  | "origin-mismatch"
+  | "untrusted-key";
 
-export type VerificationResult = { ok: true; fingerprint: string } | { ok: false; reason: VerificationFailure };
+export type VerificationResult =
+  | { ok: true; fingerprint: string; trusted: boolean }
+  | { ok: false; reason: VerificationFailure };
 
 /** Bytes a vendor signs and every verifier hashes: canonical JSON, UTF-8. */
 export function recordBytes(record: VenueKeyRecord): Buffer {
@@ -61,7 +64,19 @@ export function verifySignedVenueKeyRecord(
   expectedOrigin = "https://qrv5.jamezz.app",
 ): VerificationResult {
   const { record } = signed;
-  if (record === null || typeof record !== "object" || typeof record.mid !== "string" || typeof record.vendorPubkey !== "string" || typeof signed.signature !== "string") {
+  if (
+    record === null ||
+    typeof record !== "object" ||
+    typeof record.mid !== "string" ||
+    typeof record.vendorPubkey !== "string" ||
+    typeof signed.signature !== "string" ||
+    typeof record.issuedAt !== "string" ||
+    record.issuedAt === "" ||
+    typeof record.menuIdentity?.venueName !== "string" ||
+    record.menuIdentity.venueName === "" ||
+    typeof record.menuIdentity?.generation !== "string" ||
+    record.menuIdentity.generation === ""
+  ) {
     return { ok: false, reason: "malformed-record" };
   }
   if (record.kind !== "jamezz-venue-key-v1") return { ok: false, reason: "unknown-kind" };
@@ -73,19 +88,58 @@ export function verifySignedVenueKeyRecord(
   if (record.menuIdentity?.origin !== expectedOrigin) return { ok: false, reason: "origin-mismatch" };
   const pubkey = parsePubkey(record.vendorPubkey);
   if (pubkey === null) return { ok: false, reason: "bad-pubkey" };
+  if (pubkey.asymmetricKeyType !== "ed25519") return { ok: false, reason: "bad-pubkey" };
   const valid = edVerify(null, recordBytes(record), pubkey, Buffer.from(signed.signature, "base64"));
-  return valid ? { ok: true, fingerprint: keyFingerprint(record.vendorPubkey) } : { ok: false, reason: "bad-signature" };
+  if (!valid) return { ok: false, reason: "bad-signature" };
+  return { ok: true, fingerprint: keyFingerprint(record.vendorPubkey), trusted: isKnownBinding(record.mid, record.vendorPubkey) };
 }
+
+/**
+ * Strict variant for consumers: identical checks, plus the venue-authorized
+ * binding must already be established in the curated registry. A record that
+ * merely verifies cryptographically proves POSSESSION of the vendor key, not
+ * that the venue authorized the mid-to-key binding (issue #23) — an
+ * untrusted resolver can always supply a self-generated keypair.
+ */
+export function verifyTrustedVenueKeyRecord(
+  signed: SignedVenueKeyRecord,
+  expectedOrigin = "https://qrv5.jamezz.app",
+): VerificationResult {
+  const verdict = verifySignedVenueKeyRecord(signed, expectedOrigin);
+  if (!verdict.ok) return verdict;
+  if (!verdict.trusted) return { ok: false, reason: "untrusted-key" };
+  return verdict;
+}
+
+function isKnownBinding(mid: string, vendorPubkey: string): boolean {
+  const known = KNOWN_VENUE_KEYS[mid];
+  return known !== undefined && known.record.vendorPubkey === vendorPubkey;
+}
+
+const registry: Record<string, SignedVenueKeyRecord> = {};
 
 /**
  * Registry of verified key bindings, keyed by mid. Empty until the
  * trust-layer side publishes records; entries land only with a verified
  * signature and a recorded source (never guessed — same rule as mids).
  */
-export const KNOWN_VENUE_KEYS: Readonly<Record<string, SignedVenueKeyRecord>> = {};
+export const KNOWN_VENUE_KEYS: Readonly<Record<string, SignedVenueKeyRecord>> = registry;
 
 export function knownVenueKey(mid: string): SignedVenueKeyRecord | undefined {
-  return KNOWN_VENUE_KEYS[mid];
+  return registry[mid];
+}
+
+/** Trust-layer seam: register a binding as venue-authorized. The record must
+ *  fully verify (shape, Ed25519, signature, origin) before it enters the
+ *  registry — this is the only write path to KNOWN_VENUE_KEYS. */
+export function registerKnownVenueKey(
+  signed: SignedVenueKeyRecord,
+  expectedOrigin = "https://qrv5.jamezz.app",
+): VerificationResult {
+  const verdict = verifySignedVenueKeyRecord(signed, expectedOrigin);
+  if (!verdict.ok) return verdict;
+  registry[signed.record.mid] = signed;
+  return verdict;
 }
 
 /** Test/self-sign helper: produces a valid record + signature for a keypair. */

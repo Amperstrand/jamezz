@@ -29,7 +29,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
     "gate": "node scripts/leak-scan.mjs . --history",
     "prepare": "tsc -p tsconfig.json",
-    "prepublishOnly": "npm test && npm run typecheck && node scripts/leak-scan.mjs . --history"
+    "prepublishOnly": "npm test && npm run typecheck && node scripts/leak-scan.mjs . --history",
+    "pretest": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
