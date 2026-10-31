@@ -66,7 +66,7 @@
 | `8924NWV` | Anne&Max Maastricht — Webshop (take-away) | Maastricht, NL | MOLLIE |
 | `9511X1R` | Anne&Max Eindhoven Strijp-S — Catering webshop | Eindhoven, NL | MOLLIE |
 | `9512JZC` | Anne&Max Apeldoorn — Catering webshop | Apeldoorn, NL | MOLLIE |
-| `73819BK` | Omami Johanneberg — Webshop (Leading) | Johanneberg, Jönköping, SE | MOLLIE (SEK) |
+| `73819BK` | Omami Johanneberg — Webshop (Leading) | Johanneberg, Göteborg, SE | MOLLIE (SEK) |
 | `7384ZPR` | Omami Brämhult — Webshop | Brämhult, Borås, SE | MOLLIE (SEK) |
 | `8316ADD` | Omami Linne — Webshop | Sweden (city not confirmed) | MOLLIE (SEK) |
 | `8810PKE` | Omami Central — Webshop (Leading) | Sweden (city not confirmed) | MOLLIE (SEK) |

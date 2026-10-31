@@ -9,10 +9,12 @@ export type HttpMethod = "GET" | "POST";
 
 export interface EndpointTemplate {
   readonly method: HttpMethod;
+  /** Path templating: {mid} = table mid, {orderId} = the order id returned
+   *  by orderSubmit — distinct kinds, never interchangeable (issue #26). */
   readonly path: string;
   readonly contentType?: "json" | "form-data";
-  readonly query?: Readonly<Record<string, "mid" | "return-path">>;
-  readonly body?: Readonly<Record<string, "mid" | "return-path" | "cart-uuid" | "session-only">>;
+  readonly query?: Readonly<Record<string, "mid" | "return-path" | "order-id">>;
+  readonly body?: Readonly<Record<string, "mid" | "return-path" | "cart-uuid" | "session-only" | "order-id">>;
 }
 
 export interface FieldRule {
@@ -106,7 +108,7 @@ export const JAMEZZ_ADAPTER = {
       contentType: "json",
       body: { session_mid: "mid", session_return_path: "return-path", unique_shopping_cart_uuid: "cart-uuid", shopping_cart_uuid: "cart-uuid" },
     },
-    orderStatus: { method: "GET", path: "/v5_2/kiosk/order/{mid}" },
+    orderStatus: { method: "GET", path: "/v5_2/kiosk/order/{orderId}" },
   },
   fieldMaps: {
     venueName: { jsonPath: "data.salesarea.systeemNaam", required: true },
@@ -172,8 +174,22 @@ export function validateAdapter(spec: AdapterSpec): readonly SpecProblem[] {
   if (spec.auth.kind !== "laravel-session") problems.push("auth.kind: only laravel-session is specced");
   for (const [name, endpoint] of Object.entries(spec.endpoints)) {
     if (!endpoint.path.startsWith("/")) problems.push(`endpoints.${name}.path: must be origin-relative`);
-    if (endpoint.path.includes("{") && !endpoint.path.includes("{mid}")) {
-      problems.push(`endpoints.${name}.path: only {mid} templating is supported`);
+    const placeholders = endpoint.path.match(/\{[^}]+\}/g) ?? [];
+    for (const ph of placeholders) {
+      if (ph !== "{mid}" && ph !== "{orderId}") {
+        problems.push(`endpoints.${name}.path: only {mid}/{orderId} templating is supported`);
+      }
+    }
+  }
+  for (const step of spec.dryRun.steps) {
+    const stepEndpoint = spec.endpoints[step];
+    if (stepEndpoint === undefined) continue;
+    for (const forbidden of spec.dryRun.forbidden) {
+      const forbiddenEndpoint = spec.endpoints[forbidden as keyof typeof spec.endpoints];
+      if (forbiddenEndpoint === undefined) continue;
+      if (stepEndpoint.method === forbiddenEndpoint.method && stepEndpoint.path === forbiddenEndpoint.path) {
+        problems.push(`dryRun: step '${step}' aliases forbidden endpoint '${forbidden}'`);
+      }
     }
   }
   for (const [name, rule] of Object.entries(spec.fieldMaps)) {

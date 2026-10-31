@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { JAMEZZ_ADAPTER, resolveChain, validateAdapter } from "../src/adapter.js";
+import { JamezzAdapterEngine } from "../src/adapter-engine.js";
 import { fakeJamezz } from "./jamezz-fake.js";
 import { sent } from "./transport-fake.js";
 import { burgermeisterTable } from "../src/client.js";
@@ -73,5 +74,71 @@ describe("declarative adapter spec", () => {
     for (const psp of ["MOLLIE", "ADYEN", "CM", "PAYNL", "OMNIKASSA"]) {
       expect(JAMEZZ_ADAPTER.psps).toContain(psp);
     }
+  });
+});
+
+describe("adapter-engine dry-run discipline (#26/#27)", () => {
+
+  it("fetches venueConfig only when the steps select it", async () => {
+    const { fetchImpl, requests } = fakeJamezz();
+    const spec = { ...JAMEZZ_ADAPTER, dryRun: { ...JAMEZZ_ADAPTER.dryRun, steps: ["menuFetch"] as const } };
+    const result = await new JamezzAdapterEngine(spec, fetchImpl).dryRun("8613S3X");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.steps).toEqual(["menuFetch"]);
+    }
+    expect(sent(requests, "salesarea-fetch")).toBeUndefined();
+    expect(sent(requests, "data-fetch-v2")).toBeDefined();
+  });
+
+  it("uses the injected transport, never global fetch (#26)", async () => {
+    const calls: string[] = [];
+    const countingFetch = (async (input: RequestInfo | URL) => {
+      calls.push(String(input));
+      return new Response("{}", { status: 200, headers: { "content-type": "application/json" } });
+    }) as typeof fetch;
+    const spec = { ...JAMEZZ_ADAPTER, dryRun: { ...JAMEZZ_ADAPTER.dryRun, steps: ["venueConfig"] as const } };
+    const result = await new JamezzAdapterEngine(spec, countingFetch).dryRun("8613S3X");
+    expect(result.ok).toBe(true);
+    expect(calls.length).toBe(1);
+  });
+
+  it("refuses an endpoint that aliases a forbidden one (#27)", async () => {
+    const { fetchImpl, requests } = fakeJamezz();
+    const aliased = {
+      ...JAMEZZ_ADAPTER,
+      endpoints: {
+        ...JAMEZZ_ADAPTER.endpoints,
+        venueConfig: { ...JAMEZZ_ADAPTER.endpoints.venueConfig, method: "POST" as const, path: JAMEZZ_ADAPTER.endpoints.cartOpen.path },
+      },
+    };
+    const result = await new JamezzAdapterEngine(aliased, fetchImpl).dryRun("8613S3X");
+    expect(result).toEqual({ ok: false, reason: expect.stringContaining("aliases forbidden endpoint 'cartOpen'") });
+    expect(requests.length).toBe(0);
+  });
+
+  it("validateAdapter flags aliased steps at spec time (#27)", () => {
+    const aliased = {
+      ...JAMEZZ_ADAPTER,
+      endpoints: {
+        ...JAMEZZ_ADAPTER.endpoints,
+        venueConfig: { ...JAMEZZ_ADAPTER.endpoints.venueConfig, method: "POST" as const, path: JAMEZZ_ADAPTER.endpoints.orderSubmit.path },
+      },
+    };
+    const problems = validateAdapter(aliased);
+    expect(problems.some((p) => p.includes("aliases forbidden endpoint 'orderSubmit'"))).toBe(true);
+  });
+
+  it("orderStatus is templated by {orderId}, not {mid} (#26)", () => {
+    expect(JAMEZZ_ADAPTER.endpoints.orderStatus.path).toContain("{orderId}");
+    expect(JAMEZZ_ADAPTER.endpoints.orderStatus.path).not.toContain("{mid}");
+    expect(validateAdapter(JAMEZZ_ADAPTER)).toEqual([]);
+  });
+
+  it("rejects a spec whose steps select nothing", async () => {
+    const { fetchImpl } = fakeJamezz();
+    const spec = { ...JAMEZZ_ADAPTER, dryRun: { ...JAMEZZ_ADAPTER.dryRun, steps: [] as const } };
+    const result = await new JamezzAdapterEngine(spec, fetchImpl).dryRun("8613S3X");
+    expect(result).toEqual({ ok: false, reason: "dryRun.steps selects no reads" });
   });
 });

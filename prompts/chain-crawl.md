@@ -15,7 +15,7 @@ separate mids per location — expect several per site.
 ## 1. Fetch and grep
 
 ```sh
-curl -sL <chain site / locations page> | grep -oE 'jamezz\.app/dl/[A-Za-z0-9]+|qrv5\.jamezz\.app/v5/qr/[A-Za-z0-9]+' | sort -u
+curl -fsSL <chain site / locations page> | grep -oE 'jamezz\.app/dl/[A-Za-z0-9]+|qrv5\.jamezz\.app/v5/qr/[A-Za-z0-9]+' | sort -u
 ```
 
 If nothing matches in HTML, look for a locations JSON (WordPress +

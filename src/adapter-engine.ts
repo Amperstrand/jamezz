@@ -24,7 +24,10 @@ function renderPath(path: string, mid: string): string {
  * make this engine open a cart or submit an order.
  */
 export class JamezzAdapterEngine {
-  constructor(private readonly spec: AdapterSpec) {}
+  constructor(
+    private readonly spec: AdapterSpec,
+    private readonly fetchImpl: typeof fetch = fetch,
+  ) {}
 
   async dryRun(midInput: string): Promise<DryRunResult> {
     let mid: TableMid;
@@ -33,37 +36,57 @@ export class JamezzAdapterEngine {
     } catch {
       return { ok: false, reason: `invalid table mid: ${midInput}` };
     }
-    const venueUrl = this.endpointUrl("venueConfig", mid);
-    const venue = await this.getJson(venueUrl, mid, null);
-    if (!venue.ok) return { ok: false, reason: venue.reason };
     const hits: FieldHit[] = [];
     const misses: string[] = [];
-    this.mapFields(venue.value, [
-      ["venueName", this.spec.fieldMaps.venueName],
-      ["currency", this.spec.fieldMaps.currency],
-      ["payProvider", this.spec.fieldMaps.payProvider],
-      ["orderingEnabled", this.spec.fieldMaps.orderingEnabled],
-    ], hits, misses);
+    const executed: string[] = [];
 
-    let menuPayload: unknown = null;
-    const menuStep = this.spec.dryRun.steps.includes("menuFetch");
-    if (menuStep) {
+    const venueStep = this.spec.dryRun.steps.includes("venueConfig");
+    if (venueStep) {
+      const venueConfigTemplate = this.spec.endpoints.venueConfig;
+      const guard = this.guardAgainstForbidden("venueConfig", venueConfigTemplate);
+      if (guard !== null) return { ok: false, reason: guard };
+      const venue = await this.getJson(this.endpointUrl("venueConfig", mid), mid, null);
+      if (!venue.ok) return { ok: false, reason: venue.reason };
+      executed.push("venueConfig");
+      this.mapFields(venue.value, [
+        ["venueName", this.spec.fieldMaps.venueName],
+        ["currency", this.spec.fieldMaps.currency],
+        ["payProvider", this.spec.fieldMaps.payProvider],
+        ["orderingEnabled", this.spec.fieldMaps.orderingEnabled],
+      ], hits, misses);
+    }
+
+    if (this.spec.dryRun.steps.includes("menuFetch")) {
+      const guard = this.guardAgainstForbidden("bootstrapSession", this.spec.auth.bootstrap)
+        ?? this.guardAgainstForbidden("menuFetch", this.spec.endpoints.menuFetch);
+      if (guard !== null) return { ok: false, reason: guard };
       const bootstrap = await this.fetch(this.endpointUrl("bootstrapSession", mid, this.spec.auth.bootstrap), mid, null);
       if (!bootstrap.ok) return { ok: false, reason: `session bootstrap failed: ${bootstrap.reason}` };
       const cookie = bootstrap.ok ? bootstrap.cookie : null;
       const menu = await this.getJson(this.endpointUrl("menuFetch", mid), mid, cookie);
       if (!menu.ok) return { ok: false, reason: menu.reason };
-      menuPayload = menu.value;
+      executed.push("menuFetch");
       const categories = resolvePath(menu.value, "data.menukaarts");
       if (categories === undefined) misses.push("data.menukaarts (menu payload shape)");
     }
-    void menuPayload;
-    return {
-      ok: true,
-      steps: ["venueConfig", ...(menuStep ? ["menuFetch"] : [])],
-      fieldHits: hits,
-      fieldMisses: misses,
-    };
+
+    if (executed.length === 0) return { ok: false, reason: "dryRun.steps selects no reads" };
+    return { ok: true, steps: executed, fieldHits: hits, fieldMisses: misses };
+  }
+
+  /** Runtime half of the forbidden guarantee (validate-time is the other):
+   *  refuses to fetch any endpoint whose method+path aliases one named in
+   *  spec.dryRun.forbidden — a misconfigured spec cannot sneak a mutating
+   *  call past the engine by renaming (issue #27). */
+  private guardAgainstForbidden(name: string, template: EndpointTemplate): string | null {
+    for (const forbidden of this.spec.dryRun.forbidden) {
+      const forbiddenEndpoint = this.spec.endpoints[forbidden as keyof AdapterSpec["endpoints"]];
+      if (forbiddenEndpoint === undefined) continue;
+      if (template.method === forbiddenEndpoint.method && template.path === forbiddenEndpoint.path) {
+        return `refusing ${name}: aliases forbidden endpoint '${forbidden}' (${template.method} ${template.path})`;
+      }
+    }
+    return null;
   }
 
   private mapFields(
@@ -120,7 +143,7 @@ export class JamezzAdapterEngine {
     cookie: string | null,
   ): Promise<{ ok: true; cookie: string | null } | { ok: false; reason: string }> {
     try {
-      const response = await fetch(url, { headers: this.headers(mid, cookie), signal: AbortSignal.timeout(20_000) });
+      const response = await this.fetchImpl(url, { headers: this.headers(mid, cookie), signal: AbortSignal.timeout(20_000) });
       const setCookie = response.headers
         .getSetCookie()
         .map((entry) => entry.split(";")[0])
@@ -138,7 +161,7 @@ export class JamezzAdapterEngine {
     cookie: string | null,
   ): Promise<{ ok: true; value: unknown } | { ok: false; reason: string }> {
     try {
-      const response = await fetch(url, { headers: this.headers(mid, cookie), signal: AbortSignal.timeout(20_000) });
+      const response = await this.fetchImpl(url, { headers: this.headers(mid, cookie), signal: AbortSignal.timeout(20_000) });
       if (!response.ok) return { ok: false, reason: `HTTP ${response.status} from ${new URL(url).pathname}` };
       return { ok: true, value: await response.json() };
     } catch (error) {

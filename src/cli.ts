@@ -90,7 +90,7 @@ export async function runCli(
       ports.err(`adapter spec invalid: ${problems.join("; ")}`);
       return 1;
     }
-    const engine = new JamezzAdapterEngine(JAMEZZ_ADAPTER);
+    const engine = new JamezzAdapterEngine(JAMEZZ_ADAPTER, ports.fetchImpl);
     const dry = await engine.dryRun(mid);
     if (!dry.ok) {
       ports.err(`adapter-check failed: ${dry.reason}`);
