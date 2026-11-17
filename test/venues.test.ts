@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { knownTable, KNOWN_TABLES, UNMAPPED_LOCATIONS } from "../src/venues.js";
+import { knownTable, KNOWN_TABLES, RETIRED_TABLES, UNMAPPED_LOCATIONS } from "../src/venues.js";
 
 describe("venue catalog", () => {
   it("maps only verified QR codes", () => {
@@ -9,11 +9,9 @@ describe("venue catalog", () => {
       "5960PM3",
       "4577SVC",
       "6442UFX",
-      "7540MAK",
       "8114MKM",
       "6399J53",
       "8325JY4",
-      "7541HE2",
       "7991NQZ",
       "84608JJ",
       "487MVV",
@@ -93,5 +91,13 @@ describe("venue catalog", () => {
     expect(UNMAPPED_LOCATIONS.length).toBeGreaterThan(10);
     expect(UNMAPPED_LOCATIONS.some((location) => location.name === "Mehringdamm")).toBe(true);
     expect(JSON.stringify(UNMAPPED_LOCATIONS)).not.toMatch(/[0-9]{3,}[A-Z]{3}/);
+  });
+
+  it("keeps retired mids out of the live catalog", () => {
+    expect(RETIRED_TABLES.map((table) => table.mid)).toContain("7540MAK");
+    expect(RETIRED_TABLES.map((table) => table.mid)).toContain("7541HE2");
+    for (const retired of RETIRED_TABLES) {
+      expect(KNOWN_TABLES.map((table) => table.mid)).not.toContain(retired.mid);
+    }
   });
 });

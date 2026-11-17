@@ -54,12 +54,6 @@ export const KNOWN_TABLES = [
     note: "Google-indexed QR page (verified 2026-10-02: Pizza Margherita 12.50 EUR). MOLLIE checkout.",
   },
   {
-    mid: "7540MAK" as TableMid,
-    name: "Jumbo Koornneef Monster — Webshop",
-    address: "Monster, Zuid-Holland, Netherlands",
-    note: "Google-indexed QR page (verified 2026-10-02: Goat cheese salad 5.75 EUR). MOLLIE checkout.",
-  },
-  {
     mid: "8114MKM" as TableMid,
     name: "Søgaard Bryghus takeaway",
     address: "C.W. Obels Plads 1, 9000 Aalborg, Denmark",
@@ -76,12 +70,6 @@ export const KNOWN_TABLES = [
     name: "Dickenz — Webshop (QR Design)",
     address: "Scharendijke, Zeeland, Netherlands",
     note: "Google-indexed QR page (verified 2026-10-02: frappuccino 5.95 EUR). MOLLIE checkout.",
-  },
-  {
-    mid: "7541HE2" as TableMid,
-    name: "Jumbo Koornneef Aan de Haven (Scheveningen) — Webshop",
-    address: "Scheveningen, Den Haag, Netherlands",
-    note: "Google-indexed QR page (verified 2026-10-02: Breakfast deal 3.99 EUR). MOLLIE checkout.",
   },
   {
     mid: "7991NQZ" as TableMid,
@@ -474,6 +462,27 @@ export const KNOWN_TABLES = [
     note: "Venue-published link on europarcsdezanding.nl/faciliteiten/snackbar (verified 2026-10-03: Coffee 3.50 EUR). MOLLIE checkout.",
   },
 ] as const satisfies readonly KnownTable[];
+
+/**
+ * Mids the platform has decommissioned: salesarea-fetch answers
+ * `{"status":"ok","data":[]}` (venue absent, not a network error). Kept so
+ * the provenance survives and the rows are not re-onboarded by accident.
+ * The weekly smoke does not check these.
+ */
+export const RETIRED_TABLES = [
+  {
+    mid: "7540MAK" as TableMid,
+    name: "Jumbo Koornneef Monster — Webshop",
+    retired: "2026-11-17",
+    note: "Onboarded 2026-10-02 (Google-indexed QR page, Goat cheese salad 5.75 EUR). salesarea-fetch returns data:[] since the 2026-11-09 smoke (jamezz#32).",
+  },
+  {
+    mid: "7541HE2" as TableMid,
+    name: "Jumbo Koornneef Aan de Haven (Scheveningen) — Webshop",
+    retired: "2026-11-17",
+    note: "Onboarded 2026-10-02 (Google-indexed QR page, Breakfast deal 3.99 EUR). salesarea-fetch returns data:[] since the 2026-11-09 smoke (jamezz#32); venue's own bestellen page is 404.",
+  },
+] as const;
 
 /** Public street addresses. QR mids are unknown until someone photographs the table. */
 export const UNMAPPED_LOCATIONS = [

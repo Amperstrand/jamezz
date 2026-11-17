@@ -9,11 +9,9 @@
 | `5960PM3` | Van der Valk Gent — Roomservice Cocotte | Akkerhage 10, 9000 Gent, BE | ADYEN (room charge) |
 | `4577SVC` | van der Valk Gilze-Tilburg — Toekan To Go | Gilze-Tilburg, NL | ADYEN |
 | `6442UFX` | Summio Parc Heihaas — Webshop Snackbar | Voorthuizerstraat 75, 3881 SE Putten, NL | MOLLIE |
-| `7540MAK` | Jumbo Koornneef Monster — Webshop | Monster, Zuid-Holland, NL | MOLLIE |
 | `8114MKM` | Søgaard Bryghus takeaway | C.W. Obels Plads 1, 9000 Aalborg, DK | MOLLIE (DKK) |
 | `6399J53` | Jumbo Foodmarkt Koornneef Westland (Naaldwijk) — Webshop | Naaldwijk, Zuid-Holland, NL | MOLLIE |
 | `8325JY4` | Dickenz — Webshop (QR Design) | Scharendijke, Zeeland, NL | MOLLIE |
-| `7541HE2` | Jumbo Koornneef Aan de Haven (Scheveningen) — Webshop | Scheveningen, Den Haag, NL | MOLLIE |
 | `7991NQZ` | PAPAVESS — Webshop | Mannenberg 228, 3270 Scherpenheuvel, BE | MOLLIE |
 | `84608JJ` | Omami Ulricehamn — Webshop (Leading) | Ulricehamn, SE | MOLLIE (SEK) |
 | `487MVV` | Anne&Max Utrecht Domkwartier — Afhalen V5 | Utrecht Domkwartier, NL | MOLLIE |
@@ -95,6 +93,17 @@ de Maaspoort Grave, and others). Cities that could not be confirmed from
 public sources are marked as such rather than guessed. `540BEQ` ("hello
 alpha", CHF, Stripe) is the platform's own demo surface — documented here,
 deliberately not cataloged.
+
+## Retired tables (platform-decommissioned)
+
+The platform answers `salesarea-fetch` with `{"status":"ok","data":[]}` for
+these mids — the venue is absent, not unreachable. Retired rows live in
+`RETIRED_TABLES` in `src/venues.ts` (provenance kept; not smoke-checked).
+
+| Table mid | Venue | Retired | Evidence |
+|---|---|---|---|
+| `7540MAK` | Jumbo Koornneef Monster — Webshop | 2026-11-17 | `data:[]` on salesarea-fetch (first caught by the 2026-11-09 smoke, jamezz#32) |
+| `7541HE2` | Jumbo Koornneef Aan de Haven (Scheveningen) — Webshop | 2026-11-17 | `data:[]` on salesarea-fetch (jamezz#32); venue's own `jumbokoornneef.nl/bestellen-scheveningen` page is 404 |
 
 ## Burgermeister locations
 
