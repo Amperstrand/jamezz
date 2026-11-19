@@ -386,7 +386,7 @@ export const KNOWN_TABLES = [
   {
     mid: "73819BK" as TableMid,
     name: "Omami Johanneberg — Webshop (Leading)",
-    address: "Johanneberg, Jönköping, Sweden",
+    address: "Johanneberg, Göteborg, Sweden",
     note: "Venue-published link on omami.se (verified 2026-10-03: Sushi Pop California Roll 169.00 SEK). MOLLIE checkout.",
   },
   {
